@@ -2,11 +2,15 @@
 Board Game Website group project for CISS 438 at Columbia College, Spring 2015
 
 Technologies:
-Python
-MySQL
+<ul>
+  <li>Python</li>
+  <li>MySQL</li>
+</ul>
 
 Contirbutors:
-David Forck
-Travis Banks
-Ryan Volmert
-Trevin Teacutter
+<ul>
+  <li>David Forck</li>
+  <li>Travis Banks</li>
+  <li>Ryan Volmert</li>
+  <li>Trevin Teacutter</li>
+</ul>
