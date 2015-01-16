@@ -7,7 +7,7 @@ Technologies:
   <li>MySQL</li>
 </ul>
 
-Contirbutors:
+Contributors:
 <ul>
   <li>David Forck</li>
   <li>Travis Banks</li>
