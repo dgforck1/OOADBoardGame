@@ -8,7 +8,10 @@ Registration
     A user can log in
     A user can log out
     A user can change their password
-    A user can change their username
+    A user can change their username <- Don't see this as something  	
+										we need since I rarely see 
+										sites give the ability to change
+										this. Could lead to problems ~Travis
     A user can delete their account
 
 Board Game
