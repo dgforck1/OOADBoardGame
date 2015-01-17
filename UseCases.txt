@@ -1,7 +1,22 @@
 Use Cases
 
+
 Registration
+	A user can register
+  		Username
+    	Password
+    A user can log in
+    A user can log out
+    A user can change their password
+    A user can change their username
+    A user can delete their account
 
 Board Game
+	A user can start a multiplayer game
+	A user can start a single player game
+	A user can view games awaiting players
+	A user can join an awaiting game
 
 AI
+	A user can upload a python script to play the board game
+	
