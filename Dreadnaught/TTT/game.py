@@ -1,4 +1,5 @@
-#imports
+from TTT.models import pending_games, game_results
+
 
 
 
@@ -41,10 +42,10 @@ def print_board(board):
 
 
 
-def play(game_id):
+def play(gid):
 	board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
 	piece = ''
-	history = []
+	hist = []
 
 	for i in range(9):
 		piece = 'x' if i % 2 else 'o'
@@ -54,27 +55,29 @@ def play(game_id):
 		piece = endgame_check(board)
 		if not piece == '':
 			break
-
-	#upload results to database
+	
+	temp = ''
+	for move in hist:
+		temp += '{0}'.format(move)
+	
+	q = game_results(id = gid, history = hist)
+	q.save()
 
 
 
 def main():
 	game_id = 0
-	#setup database connection
 
 	while True:
-		pending_games = []
-		#poll database for new game sessions
 
-		for game in pending_games:
-			play(game_id)
+		for game in pending_games.objects.all():
+			play(game.id)
 			game_id += 1
-
-		continue
-
-	#close database connection
-
+		
+		pending_games.objects.all().delete()
+		sleep(1000)
 
 
-#if main script, run main
+
+#if __name__ == "__main__":
+#	main()
