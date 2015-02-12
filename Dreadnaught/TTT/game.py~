@@ -1,5 +1,5 @@
 import time
-from TTT.models import pending_games, game_results
+from models import pending_games, game_results
 
 
 
@@ -65,7 +65,7 @@ def main():
         for game in pending_games.objects.all():
             play(game.id)
         pending_games.objects.all().delete()
-        time.sleep(5)
+        sleep(5)
         print 'hello'
 
 
