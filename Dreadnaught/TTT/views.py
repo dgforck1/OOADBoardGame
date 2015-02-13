@@ -1,6 +1,9 @@
 from django.shortcuts import HttpResponse
+#import game
 
-# Create your views here.
 
 def index(request):
-    return HttpResponse("Hellow, world.  You're at the index.")
+    #results = play_game()
+    #return HttpResponse(results)
+    
+    return HttpResponse("This is the index page")

@@ -60,13 +60,13 @@ def play(gid):
 
 
 
-def main():
+def main():    
     while True:
         for game in pending_games.objects.all():
             play(game.id)
         pending_games.objects.all().delete()
         time.sleep(5)
-        print 'hello'
+
 
 
 
