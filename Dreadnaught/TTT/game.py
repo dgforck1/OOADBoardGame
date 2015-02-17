@@ -34,12 +34,44 @@ def print_board(board):
 
 
 def create_html(history, winner):
-	'''
-	history is just a list of indicies of the moves
-	winner is one of three things, x, o, or empty (to denote a draw)
-	needs to return the html string that David was talking about
-	'''
-	return None
+	
+	#history is just a list of indicies of the moves
+	#winner is one of three things, x, o, or empty (to denote a draw)
+	#needs to return the html string that David was talking about
+        
+        
+	
+        html_str = '<!DOCTYPE html> \
+        <html> \
+        <head> \
+        <meta charset=UTF-8> \
+        <title>Tic-Tac-Toe</title> \
+        </head> \
+        <body> \
+        <h1>Welcome!</h1> \
+        <h2>Tic-Tac-Toe</h2> \
+        <table border=1> \
+        <tr> \
+        <th>%s</th> \
+        <th>%s</th> \
+        <th>%s</th> \
+        </tr> \
+        <tr> \
+        <th>%s</th> \
+        <th>%s</th> \
+        <th>%s</th> \
+        </tr> \
+        <tr> \
+        <th>%s</th> \
+        <th>%s</th> \
+        <th>%s</th> \
+        </tr> \
+        </table> \
+        <p>%s Wins!</p> \
+        </body> \
+        </html>' % ('X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', winner)
+        
+	return html_str
 
 
 
@@ -52,11 +84,11 @@ def play(gid, path1, path2):
     for i in range(9):
         if i % 2:
         	piece = 'o'
-        	history.append(get_move2(board, 0, piece))
+        	hist.append(get_move2(board, 0, piece))
         else:
         	piece = 'x'
-        	history.append(get_move1(board, 0, piece))
-        board[history[-1]] = piece
+        	hist.append(get_move1(board, 0, piece))
+        board[hist[-1]] = piece
         piece = endgame_check(board)
         if not piece == '':
             break
@@ -65,7 +97,7 @@ def play(gid, path1, path2):
         temp += '{0}'.format(move)
     q = game_results(id = gid, history = temp)
     q.save()
-    return create_html(history, piece)
+    return create_html(hist, piece)
 
 
 
@@ -80,4 +112,4 @@ def main():
 
 
 
-main()
+#main()

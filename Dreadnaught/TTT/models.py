@@ -8,7 +8,7 @@ class pending_games(models.Model):
         return self.name
 
 class game_results(models.Model):
-    game = models.ForeignKey(pending_games)
+    game = models.IntegerField()
     history = models.CharField(max_length=9)
     def __unicode__(self):
         return self.history
