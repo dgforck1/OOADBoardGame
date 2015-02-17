@@ -38,8 +38,23 @@ def create_html(history, winner):
 	#history is just a list of indicies of the moves
 	#winner is one of three things, x, o, or empty (to denote a draw)
 	#needs to return the html string that David was talking about
+
+        pieces = []
         
+        if winner == '':
+            winner = 'No one'
         
+        for i in range(9):
+            pieces.append(' ')
+
+        l = len(history)
+        
+        for i in range(l):            
+            if i % 2:
+        	pieces[history[i]] = 'O'        	
+            else:
+                pieces[history[i]] = 'X'
+
 	
         html_str = '<!DOCTYPE html> \
         <html> \
@@ -69,7 +84,7 @@ def create_html(history, winner):
         </table> \
         <p>%s Wins!</p> \
         </body> \
-        </html>' % ('X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', winner)
+        </html>' % (pieces[0], pieces[1], pieces[2], pieces[3], pieces[4], pieces[5], pieces[6], pieces[7], pieces[8], winner)
         
 	return html_str
 
