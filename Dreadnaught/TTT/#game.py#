@@ -91,12 +91,12 @@ def create_html(history, winner):
 
 
 def play(gid, path1, path2):
-    
+    '''
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
     piece = ''
     hist = []
-    exec('from {0} import get_move as get_move1'.format(path1.rstrip('.py')))
-    exec('from {0} import get_move as get_move2'.format(path2.rstrip('.py')))
+    exec(from {0} import get_move as get_move1.format(path1.rstrip(.py)))
+    exec('from {0} import get_move as get_move2.format(path2.rstrip('.py')))
     for i in range(9):
         if i % 2:
         	piece = 'o'
@@ -108,15 +108,15 @@ def play(gid, path1, path2):
         piece = endgame_check(board)
         if not piece == '':
             break
-    temp = ''
+    temp = 
     for move in hist:
-        temp += '{0}'.format(move)
+        temp += {0}.format(move)
     q = game_results(id = gid, history = temp)
     q.save()
     return create_html(hist, piece)
-    
+    '''
 
-'''
+
 def main():    
     while True:
         for game in pending_games.objects.all():
@@ -124,7 +124,7 @@ def main():
             play(game.id, game.player1, game.player2)
         pending_games.objects.all().delete()
         time.sleep(5)
-'''
+
 
 
 
