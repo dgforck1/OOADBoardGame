@@ -19,7 +19,7 @@ def save_script(s, n):
             destination.write(chunk)
     
 
-def index(request):
+def play_game(request):
     a = pending_games(name = "a")
     a.save()
     firstai = 'ai1.py'
@@ -60,9 +60,9 @@ def home(request):
 def get_home():
     string = '<!DOCTYPE html><html><head><title></title></head><body> \
     <ul> \
-    <li><a href="../uploads">Upload Scripts</a></li> \
-    <li>Play a game</li> \
-    <li><a href="../lobby">Game Lobby</a></li> \
+    <li><a href="uploads">Upload Scripts</a></li> \
+    <li><a href="play_game">Play a game</a></li> \
+    <li><a href="lobby">Game Lobby</a></li> \
     </ul></body></html>'
 
     return string
