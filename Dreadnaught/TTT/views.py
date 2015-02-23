@@ -14,6 +14,9 @@ def save_script(s, n):
     
     path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
 
+    sc.location = path
+    sc.save()
+
     with open(path, 'wb+') as destination:
         for chunk in s.chunks():
             destination.write(chunk)
