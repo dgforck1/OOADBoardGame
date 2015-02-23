@@ -44,8 +44,25 @@ def uploads(request):
 
     return render(request, 'uploads.html', {'form': form})
 
+
 def game_lobby(request):
     results = show_open_games()
     return HttpResponse(results)
 
-    
+
+
+def home(request):
+    results = get_home()
+    return HttpResponse(results)
+
+
+
+def get_home():
+    string = '<!DOCTYPE html><html><head><title></title></head><body> \
+    <ul> \
+    <li><a href="../uploads">Upload Scripts</a></li> \
+    <li>Play a game</li> \
+    <li><a href="../lobby">Game Lobby</a></li> \
+    </ul></body></html>'
+
+    return string
