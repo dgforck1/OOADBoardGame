@@ -4,7 +4,7 @@ from TTT.models import pending_games, game_results
 from TTT.models import users, scripts
 from game import play
 from forms import UploadFileForm
-
+from lobby import show_open_games
 
 def save_script(s, n):
     currentuser = users.objects.get(pk=1)
@@ -17,8 +17,6 @@ def save_script(s, n):
     with open(path, 'wb+') as destination:
         for chunk in s.chunks():
             destination.write(chunk)
-    
-
     
 
 def index(request):
@@ -45,5 +43,9 @@ def uploads(request):
         form = UploadFileForm()
 
     return render(request, 'uploads.html', {'form': form})
+
+def game_lobby(request):
+    results = show_open_games()
+    return HttpResponse(results)
 
     
