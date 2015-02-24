@@ -219,9 +219,9 @@ def play(game):
 
 def play2(game):
     if game is None:
-        return 'Broken'
+        return 'No Game Passed'
     if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
-        return 'Broken'
+        return 'Wrong State'
 
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
     hist = []

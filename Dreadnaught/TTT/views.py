@@ -59,9 +59,9 @@ def select_game(request):
             gid = g.id
 
             results = play2(g)
-            #request.POST['gid'] = gid
+            request.POST['gid'] = gid
 
-            return render(request, 'human_game.html', {'form': form, 'gid': gid 'html_string': results})
+            return render(request, 'human_game.html', {'form': form, 'gid': gid, 'html_string': results})
     else:
         form = SelectGame()
         gid = -1
