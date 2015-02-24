@@ -205,11 +205,11 @@ def play(game):
         game.ai1script.wins +=1
         game.ai2script.losses +=1
     elif state == 4:
-        game.ai1script.losses +=1
-        game.ai2script.wins +=1
+        game.ai1script.losses += 1
+        game.ai2script.wins += 1
     elif state == 5:
-        game.ai1script.draws +=1
-        game.ai2script.draws +=1
+        game.ai1script.draws += 1
+        game.ai2script.draws += 1
 
     game.ai1script.save()
     game.ai2script.save()
@@ -217,7 +217,7 @@ def play(game):
 
 
 
-def play2(game):
+def play_turn(game):
     if game is None:
         return 'No Game Passed'
     if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
@@ -225,7 +225,6 @@ def play2(game):
 
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
     hist = []
-    state = 0
     ai = None
 
     for i, l in enumerate(game.history):
@@ -257,7 +256,7 @@ def play2(game):
             hist.append(get_move2(board, 0, piece))
 
     board[hist[-1]] = piece
-    state = state_check(board, state)
+    state = state_check(board, game.state)
     temp = ''
 
     for move in hist:
@@ -265,6 +264,6 @@ def play2(game):
 
     game.history = temp
     game.state = state
-    q.save()
+    game.save()
 
-    return create_html(hist, state)
+    return create_html2(hist, state)
