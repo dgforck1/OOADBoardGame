@@ -31,15 +31,15 @@ def state_check(board, state):
     elif board[0] == board[4] == board[8] != ' ':
         return state_translate(board[0])
     elif board[1] == board[4] == board[7] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[1])
     elif board[2] == board[4] == board[6] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[2])
     elif board[2] == board[5] == board[8] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[2])
     elif board[3] == board[4] == board[5] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[3])
     elif board[6] == board[7] == board[8] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[6])
     else:
         for i, pos in enumerate(board):
             if pos == ' ':
@@ -128,23 +128,12 @@ def play(game):
     state = 1
 
     ai1 = game.ai1script.location
-    
-    '''
-    for l in game.ai1script:
-        ai1 += l
-    '''
-    ai1 = ai1.split('/')
-    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))
-    
     ai2 = game.ai2script.location
-
-    '''
-    for l in game.ai2script:
-        ai2 += l
-    '''
-    
-    ai2 = ai2.split('/')
+    ai1 = ai1.split('/')
+    ai2 = ai2.split('/')    
+    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))           
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
+
 
     while True:
         if state == 1:
@@ -168,6 +157,18 @@ def play(game):
     game.state = state
     game.save()
 
+    if state == 3:
+        game.ai1script.wins +=1
+        game.ai2script.losses +=1
+    elif state == 4:
+        game.ai1script.losses +=1
+        game.ai2script.wins +=1
+    elif state == 5:
+        game.ai1script.draws +=1
+        game.ai2script.draws +=1
+
+    game.ai1script.save()
+    game.ai2script.save()
     return create_html(hist, state)
 
 
