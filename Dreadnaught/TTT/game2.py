@@ -205,4 +205,12 @@ def play3(game):
 
 
 
+def main():
+    while True:
+        for game in pending_games.objects.all():
+            play(game)
+        time.sleep(1)
 
+
+
+main()
