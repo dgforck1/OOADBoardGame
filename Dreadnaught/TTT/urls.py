@@ -5,6 +5,8 @@ from TTT import views
 urlpatterns = patterns('',
     url(r'^play_game$', views.select_ai, name='play_game'),
     url(r'^selectai$', views.select_ai, name='select_ai'),
+    url(r'^human_game$', views.human_game, name='human_game'),
+    url(r'^human_game/$', views.human_game, name='human_game'),
     url(r'^play_game$', views.select_ai, name='play_game'),
     url(r'^$', views.home, name='home'),
     url(r'^home/$', views.home, name='home'),

@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from TTT.models import users, scripts, game
 #from game import play
 from game2 import play
-from forms import UploadFileForm, SelectAI
+from forms import UploadFileForm, SelectAI, HumanGame
 from lobby import show_open_games
 
 def save_script(s, n):
@@ -13,7 +13,8 @@ def save_script(s, n):
     sc = scripts(user_id = currentuser, name = n)
     sc.save()
     
-    path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
+    #path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
+    path = '/home/student/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
 
     sc.location = path
     sc.save()
@@ -21,17 +22,6 @@ def save_script(s, n):
     with open(path, 'wb+') as destination:
         for chunk in s.chunks():
             destination.write(chunk)
-    
-'''
-def play_game(request):
-    a = pending_games(name = a)
-    a.save()
-    firstai = ai1.py
-    secondai = ai2.py
-    
-    results = play(a.id, firstai, secondai)
-    return HttpResponse(results)
-'''
 
 def uploads(request):    
     if request.method == 'POST':
@@ -56,19 +46,20 @@ def game_lobby(request):
 
 def human_game(request):
     if request.method == 'POST':
-        form = SelectAI(request.POST)
+        form = HumanGame(request.POST)
 
         if form.is_valid():
             ai1 = form.cleaned_data['ai1']
+            ai2 = form.cleaned_data['ai2']
 
-            g = game(ai1script = None, ai2script  = ai2)
+            g = game(ai1script = ai1, ai2script  = ai2)
             g.save()
 
             results = play(g)
 
             return HttpResponse(results)
     else:
-        form = SelectAI()
+        form = HumanGame()
 
     return render(request, 'human_game.html', {'form': form})
 
@@ -112,6 +103,7 @@ def get_home():
     <ul> \
     <li><a href="uploads">Upload Scripts</a></li> \
     <li><a href="play_game">Play a game</a></li> \
+    <li><a href="human_game">Play a game against an AI</a></li> \
     <li><a href="lobby">Game Lobby</a></li> \
     </ul></body></html>'
 

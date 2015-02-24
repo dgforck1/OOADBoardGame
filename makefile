@@ -23,3 +23,7 @@ push_all:
 	git add -A
 	git commit -a
 	git push https://github.com/dgforck1/OOADBoardGame
+
+force_pull:
+	git reset --hard HEAD
+	git pull
