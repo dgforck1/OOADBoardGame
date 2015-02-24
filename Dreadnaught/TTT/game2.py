@@ -123,9 +123,15 @@ def play(game):
     hist = []
     state = 1
 
-    ai1 = game.ai1script.split('/')
+    ai1 = ''
+    for l in game.ai1script:
+        ai1 += l
+    ai1 = ai1.split('/')
     exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))
-    ai2 = game.ai2script.split('/')
+    ai2 = ''
+    for l in game.ai2script:
+        ai2 += l
+    ai2 = ai1.split('/')
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
 
     while True:
