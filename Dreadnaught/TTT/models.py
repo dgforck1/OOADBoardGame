@@ -15,7 +15,7 @@ class users(models.Model):
 
 class scripts(models.Model):
     user_id = models.ForeignKey(users)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default='')
     location = models.CharField(max_length=255, default='')
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
@@ -31,7 +31,7 @@ class game(models.Model):
     ai2script = models.ForeignKey(scripts, blank=True, null=True, related_name='s2')
     state = models.IntegerField(default=0)
         #0: pending, 1: x's turn, 2: o's turn, 3: x won, 4: o won, 5: draw
-    history = models.CharField(max_length=9)
+    history = models.CharField(max_length=9, default='')
     def __unicode__(self):
         return self.state
 

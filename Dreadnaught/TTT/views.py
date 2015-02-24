@@ -24,7 +24,7 @@ def save_script(s, n):
     
 '''
 def play_game(request):
-    a = pending_games(name = "a")
+    a = pending_games(name = a)
     a.save()
     firstai = ai1.py
     secondai = ai2.py

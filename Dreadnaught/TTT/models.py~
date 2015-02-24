@@ -16,9 +16,10 @@ class users(models.Model):
 class scripts(models.Model):
     user_id = models.ForeignKey(users)
     name = models.CharField(max_length=50)
+    location = models.CharField(max_length=255, default='')
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
-    draws = models.IntegerField(default=0)
+    draws = models.IntegerField(default=0)    
     def __unicode__(self):
         return self.name
 
