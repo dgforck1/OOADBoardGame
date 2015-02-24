@@ -14,12 +14,15 @@ def save_script(s, n):
     
     path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
 
+    sc.location = path
+    sc.save()
+
     with open(path, 'wb+') as destination:
         for chunk in s.chunks():
             destination.write(chunk)
     
 
-def index(request):
+def play_game(request):
     a = pending_games(name = "a")
     a.save()
     firstai = 'ai1.py'
@@ -44,8 +47,25 @@ def uploads(request):
 
     return render(request, 'uploads.html', {'form': form})
 
+
 def game_lobby(request):
     results = show_open_games()
     return HttpResponse(results)
 
-    
+
+
+def home(request):
+    results = get_home()
+    return HttpResponse(results)
+
+
+
+def get_home():
+    string = '<!DOCTYPE html><html><head><title></title></head><body> \
+    <ul> \
+    <li><a href="uploads">Upload Scripts</a></li> \
+    <li><a href="play_game">Play a game</a></li> \
+    <li><a href="lobby">Game Lobby</a></li> \
+    </ul></body></html>'
+
+    return string

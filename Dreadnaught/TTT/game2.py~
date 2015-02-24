@@ -104,7 +104,7 @@ def create_html(history, state):
 
 def play(game):
     if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
-        return 'she can\'t take much more captain'
+        return
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
     hist = []
     state = 0
@@ -136,7 +136,7 @@ def play(game):
     return create_html(hist, state)
 
 
-'''
+
 def main():
     while True:
         for game in pending_games.objects.all():
@@ -146,4 +146,3 @@ def main():
 
 
 main()
-'''
