@@ -13,7 +13,9 @@ def create_html():
     #available.append(pend_games)
     #ai_available.append(ai_on_server)
 
-    html_str = '<!DOCTYPE html> \
+    html_str = 'game lobby'
+    '''
+    html_str = <!DOCTYPE html> \
     <html> \
     <head> \
     <meta charset=UTF-8> \
@@ -26,7 +28,8 @@ def create_html():
     <p></p> \
     </br> \
     </body> \ 
-    </html>'
+    </html>
+    '''				
     #% (available, ai_available)
 
     return html_str
