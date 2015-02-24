@@ -79,30 +79,11 @@ def create_html2(history, state):
     elif state == 5:
         statement = 'Draw'
         
-    html_str = '<!DOCTYPE html> \
-    <html> \
-    <head> \
-    <meta charset=UTF-8> \
-    <title>Tic-Tac-Toe</title> \
-    </head> \
-    <body> \
-    <h1>Welcome!</h1> \
+    html_str = '<h1>Welcome!</h1> \
     <h2>Tic-Tac-Toe</h2> \
-    <select name="Moves"> \
     '
 
-    available = range(9)
-    for a in available:
-        if a in history:
-            available.remove(a)
-
-    for a in available:
-        html_str += '<option value="%d">%d</option> \
-        ' % (a, a)
-
-    html_str += '</select> \
-    <table border=1> \
-    '
+    html_str += '<table border=1>'
 
     for i in range(0, 9, 3):
         html_str += '<tr> \
@@ -113,9 +94,7 @@ def create_html2(history, state):
         ' % (pieces[i], pieces[i + 1], pieces[i + 2])
 
     html_str += '</table> \
-    <p>%s</p> \
-    </body> \
-    </html>' % (statement)
+    <p>%s</p>' % (statement)
 
     return html_str
 
