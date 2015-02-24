@@ -237,23 +237,29 @@ def play_turn(game):
 
         hist.append(pos)
 
+    piece = ''
 
     if game.state == 1:
-        ai = game.ai1script.location
+        ai = game.ai1script
 
-        if not ai is None:
-            ai = ai.split('/')
-            exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
-            piece = 'x'
-            hist.append(get_move1(board, 0, piece))
+        if ai == None:
+            return create_html2(hist, game.state)
+
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
+        piece = 'x'
+        hist.append(get_move1(board, 0, piece))
     elif game.state == 2:
-        ai = game.ai2script.location
+        ai = game.ai2script
 
-        if not ai is None:
-            ai = ai.split('/')
-            exec('from scripts.{0} import get_move as get_move2'.format(ai[-1].rstrip('.py')))
-            piece = 'o'
-            hist.append(get_move2(board, 0, piece))
+        if ai == None:
+            return create_html2(hist, game.state)
+        
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move2'.format(ai.location[-1].rstrip('.py')))
+        piece = 'o'
+        hist.append(get_move2(board, 0, piece))
+
 
     board[hist[-1]] = piece
     state = state_check(board, game.state)

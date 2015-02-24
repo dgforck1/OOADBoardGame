@@ -60,7 +60,6 @@ def select_game(request):
             gid = g.id
 
             results = play_turn(g)
-            #request.POST['gid'] = gid
 
             return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
     else:
@@ -77,9 +76,11 @@ def human_game(request):
             move = form.cleaned_data['move']
 
         gid = request.POST['gameid']
+        print "Game ID:", gid
 
         g = game.objects.get(id = gid)
-        g.history += move
+        g.history += '%d' % (move)
+        g.state = ((g.state % 2) + 1)
         g.save()
 
         results = play_turn(g)
@@ -87,8 +88,8 @@ def human_game(request):
         form = HumanGame()
         results = 'Suck a dick'
 
-    return render(request, 'human_game.html', {'form': form, 'html_string': results})
-
+    return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
+    
 
 
 def home(request):
