@@ -54,6 +54,25 @@ def game_lobby(request):
     return HttpResponse(results)
 
 
+def human_game(request):
+    if request.method == 'POST':
+        form = SelectAI(request.POST)
+
+        if form.is_valid():
+            ai1 = form.cleaned_data['ai1']
+
+            g = game(ai1script = None, ai2script  = ai2)
+            g.save()
+
+            results = play(g)
+
+            return HttpResponse(results)
+    else:
+        form = SelectAI()
+
+    return render(request, 'human_game.html', {'form': form})
+
+
 
 def home(request):
     results = get_home()
@@ -83,6 +102,7 @@ def select_ai(request):
         form = SelectAI()
 
     return render(request, 'selectai.html', {'form': form})
+
             
 
 

@@ -215,16 +215,3 @@ def play3(game):
     q.save()
 
     return create_html(hist, state)
-
-
-'''
-def main():
-    while True:
-        for game in pending_games.objects.all():
-            play(game)
-        time.sleep(1)
-
-
-
-main()
-'''
