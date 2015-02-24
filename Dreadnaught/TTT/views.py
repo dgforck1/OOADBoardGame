@@ -1,6 +1,6 @@
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
-from TTT.models import pending_games, game_results
+
 from TTT.models import users, scripts, game
 #from game import play
 from game2 import play

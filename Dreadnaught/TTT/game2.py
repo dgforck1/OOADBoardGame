@@ -58,19 +58,23 @@ def print_board(board):
 
 def create_html(history, state):
     pieces = []
+    
     for i in range(9):
-        pieces.append(' ')
+        pieces.append('&nbsp; &nbsp;')
+        
     l = len(history)
+    
     if state == 1:
         statement = 'X\'s Turn'
     elif state == 2:
         statement = 'O\'s Turn'
     elif state == 3:
-        statement = 'X\'s Win'
+        statement = 'X Wins'
     elif state == 4:
-        statement = 'O\'s Win'
+        statement = 'O Wins'
     elif state == 5:
         statement = 'Draw'
+        
     html_str = '<!DOCTYPE html> \
     <html> \
     <head> \
@@ -123,15 +127,23 @@ def play(game):
     hist = []
     state = 1
 
-    ai1 = ''
+    ai1 = game.ai1script.location
+    
+    '''
     for l in game.ai1script:
         ai1 += l
+    '''
     ai1 = ai1.split('/')
     exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))
-    ai2 = ''
+    
+    ai2 = game.ai2script.location
+
+    '''
     for l in game.ai2script:
         ai2 += l
-    ai2 = ai1.split('/')
+    '''
+    
+    ai2 = ai2.split('/')
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
 
     while True:
@@ -154,7 +166,7 @@ def play(game):
 
     game.history = temp
     game.state = state
-    q.save()
+    game.save()
 
     return create_html(hist, state)
 
@@ -204,7 +216,7 @@ def play3(game):
     return create_html(hist, state)
 
 
-
+'''
 def main():
     while True:
         for game in pending_games.objects.all():
@@ -214,3 +226,4 @@ def main():
 
 
 main()
+'''
