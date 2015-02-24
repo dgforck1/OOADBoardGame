@@ -1,5 +1,0 @@
-use Dreadnaught;
-
-delete from TTT_games;
-delete from TTT_scripts;
-delete from TTT_users;
