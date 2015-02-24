@@ -4,12 +4,16 @@ from TTT.models import users, scripts, game
 
 def create_html():
 
-	test = []
-	test.append('test1')
-	test.append('test2')
-	test.append('test3')
+    available = []
+    ai_available = []
+    
+    pend_games = game.objects.filter(state=0)
+    ai_on_server = scripts.objects.all()
+    
+    available.append(pend_games)
+    ai_available.append(ai_on_server)
 
-	html_str = """<!DOCTYPE html> 
+    html_str = """<!DOCTYPE html> 
     <html> 
     <head> 
     <meta charset=UTF-8> 
@@ -18,12 +22,13 @@ def create_html():
     <body> 
     <h1>Game Lobby</h1> 
     <p>username ai name game id</p>
-    
+    <p>%s</p>
+    <p>%s</p>
     </br> 
     </body> 
-    </html>""" % (test)
+    </html>""" % (available, ai_available)
 
-	return html_str
+    return html_str
 
 def show_open_games():
-	return create_html()
+    return create_html()
