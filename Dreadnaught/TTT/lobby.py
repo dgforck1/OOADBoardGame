@@ -16,11 +16,19 @@ def create_html():
     html_str = '<!DOCTYPE html> \
     <html> \
     <head> \
-    <meta charset=UTF-8> \
+    <meta chaarset=UTF-8> \
     <title>Game Lobby</title> \
     </head> \
-    <body> \
+    <body bgcolor="#E6E6FA"> \
     <h1>Game Lobby</h1> \
+    <table class="rwd-table"> \
+    <tr> \
+        <th>Movie Title</th> \
+        <th>Genre</th> \
+        <th>Year</th> \
+        <th>Gross</th> \
+    </tr> \
+    </table> \
     <p>username ai name game id</p>'
     
     for games in game.objects.filter(state=0):
@@ -32,7 +40,7 @@ def create_html():
         html_str += '<p>%s</p>' % (AI.name)
     
     html_str += '</body> \
-                </html>' 
+                 </html>' 
 
     return html_str
 
