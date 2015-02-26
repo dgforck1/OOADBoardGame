@@ -12,3 +12,7 @@ class SelectAI(forms.Form):
 class HumanGame(forms.Form):
     ai1 = forms.ModelChoiceField(label = "AI 1", queryset=scripts.objects.all(), required=False, empty_label=None)
     ai2 = forms.ModelChoiceField(label = "AI 2", queryset=scripts.objects.all(), required=False, empty_label=None)
+
+class Login(forms.Form):
+    username = forms.CharField(label="User Name", max_length = 20)
+    password = forms.CharField(widget=forms.PasswordInput)

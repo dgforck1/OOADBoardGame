@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from TTT.models import users, scripts, game
 #from game import play
 from game2 import play
-from forms import UploadFileForm, SelectAI, HumanGame
+from forms import UploadFileForm, SelectAI, HumanGame, Login
 from lobby import show_open_games
 
 def save_script(s, n):
@@ -13,8 +13,8 @@ def save_script(s, n):
     sc = scripts(user_id = currentuser, name = n)
     sc.save()
     
-    #path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
-    path = '/home/student/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
+    path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
+    #path = '/home/student/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
 
     sc.location = path
     sc.save()
@@ -66,9 +66,18 @@ def human_game(request):
 
 
 def home(request):
-    results = get_home()
-    return HttpResponse(results)
 
+    request.session.set_expiry(0)
+    if 'user_id' in request.session:
+        results = get_home(request.session['user_id'])        
+    else:
+        if 'user_name' in request.session:
+            results = get_home(request.session['user_name'])
+        else:
+            request.session['user_name'] = 'Guest'
+            results = get_home('Guest')
+        
+    return HttpResponse(results)
 
 def select_ai(request):
     if request.method == 'POST':
@@ -95,16 +104,84 @@ def select_ai(request):
     return render(request, 'selectai.html', {'form': form})
 
             
+def login(request):
+    if 'user_id' in request.session:
+        if request.session['user_id'] > 0:
+            results = 'already logged in'
+            return HttpResponse(results)
+        else:
+            results = 'not logged in'
+            return HttpResponse(results)
+    else:
+        if request.method == 'POST':
+            form = Login(request.POST)
+            
+            if form.is_valid():
+                try:
+                    username = request.POST['username']
+                    password = request.POST['password']
+                    u = users.objects.get(user_name = request.POST['username'])
+                    p = u.password
+                    
+                    if password == p:
+                        request.session['user_id'] = u.id
+                        return HttpResponseRedirect('.')
+                    else:
+                        return HttpResponse('incorrect username or password')
+                    
+                except:
+                    return HttpResponse('login failed')
+                
+            else:
+                form = Login()
+                return render(request, 'login.html', {'form': form})
+
+        else:
+            form = Login()
+            return render(request, 'login.html', {'form': form})
+    
 
 
 
-def get_home():
-    string = '<!DOCTYPE html><html><head><title></title></head><body> \
-    <ul> \
-    <li><a href="uploads">Upload Scripts</a></li> \
-    <li><a href="play_game">Play a game</a></li> \
-    <li><a href="human_game">Play a game against an AI</a></li> \
-    <li><a href="lobby">Game Lobby</a></li> \
-    </ul></body></html>'
+def get_home(user_id):
+
+    if user_id != 'Guest':
+        try:
+            u = users.objects.get(pk=user_id)
+            name = u.user_name
+
+            string = '<!DOCTYPE html><html><head><title></title></head><body> \
+            Welcome %s! \
+            <ul> \
+            <li><a href="uploads">Upload Scripts</a></li> \
+            <li><a href="play_game">Play a game</a></li> \
+            <li><a href="human_game">Play a game against an AI</a></li> \
+            <li><a href="lobby">Game Lobby</a></li> \
+            <li><a href="logout">Log Out</a></li> \
+            </ul></body></html>' % (name)
+            
+        except:
+            name = 'Guest'
+            string = '<!DOCTYPE html><html><head><title></title></head><body> \
+            Welcome %s! To be able to retrieve your scripts, please login! \
+            <ul> \
+            <li><a href="login">Log In</a></li> \
+            <li><a href="uploads">Upload Scripts</a></li> \
+            <li><a href="play_game">Play a game</a></li> \
+            <li><a href="human_game">Play a game against an AI</a></li> \
+            <li><a href="lobby">Game Lobby</a></li> \
+            </ul></body></html>' % (name)
+    else:
+        name = 'Guest'
+        string = '<!DOCTYPE html><html><head><title></title></head><body> \
+        Welcome %s! To be able to retrieve your scripts, please login! \
+        <ul> \
+        <li><a href="login">Log In</a></li> \
+        <li><a href="uploads">Upload Scripts</a></li> \
+        <li><a href="play_game">Play a game</a></li> \
+        <li><a href="human_game">Play a game against an AI</a></li> \
+        <li><a href="lobby">Game Lobby</a></li> \
+        </ul></body></html>' % (name)
+
 
     return string
