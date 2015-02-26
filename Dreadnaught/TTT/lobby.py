@@ -7,10 +7,10 @@ def create_html():
     ai_count = scripts.objects.count()
     game_count = game.objects.count()
 
-    user = users.objects.get(pk=1)
-    ai = scripts.objects.get(pk=1) 
-    p = game(player1=user, state=0, ai1script=ai)
-    p.save()
+    #user = users.objects.get(pk=1)
+    #ai = scripts.objects.get(pk=1) 
+    #p = game(player1=user, state=0, ai1script=ai)
+    #p.save()
     
     html_str = """
     <!DOCTYPE html>
@@ -115,14 +115,13 @@ def create_html():
     for games in game.objects.filter(state=0):
         html_str += """ 
     	<tr>
-			<td data-th="Username">%s</td>
+			<td data-th="Usename">%s</td>
 			<td data-th="Ai Name">%s</td>
 			<td data-th="Game ID">%s</td>
 		</tr>
-        """ % (games.player1.user_name, p.ai1script.name, count)
+        """ % (games.player1.user_name, games.ai1script.name, games.id)
   
     html_str += """
-    <h1>Available AI</h1>
     <tr>
     	<th>Available AI</th>
     <tr>
