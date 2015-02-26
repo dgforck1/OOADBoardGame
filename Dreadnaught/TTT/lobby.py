@@ -108,18 +108,16 @@ def create_html():
     <table class="rwd-table">
     <tr>
         <th>Username</th>
-        <th>Ai Name</th>
         <th>Game ID</th>
     </tr>
     """ 
     for games in game.objects.filter(state=0):
         html_str += """ 
     	<tr>
-			<td data-th="Usename">%s</td>
-			<td data-th="Ai Name">%s</td>
+			<td data-th="Username">%s</td>
 			<td data-th="Game ID">%s</td>
 		</tr>
-        """ % (games.player1.user_name, games.ai1script.name, games.id)
+        """ % (games.player1.user_name, games.id)
   
     html_str += """
     <tr>
