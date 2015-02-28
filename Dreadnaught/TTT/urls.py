@@ -14,4 +14,6 @@ urlpatterns = patterns('',
     url(r'^uploads/$', views.uploads, name='uploads'),
     url(r'^lobby$', views.game_lobby, name='game_lobby'),
     url(r'^login$', views.login, name='login'),
+    url(r'^logout$', views.logout, name='logout'),
+    url(r'^signup$', views.signup, name='signup'),
 )

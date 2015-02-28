@@ -2,9 +2,8 @@ from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 
 from TTT.models import users, scripts, game
-#from game import play
 from game2 import play
-from forms import UploadFileForm, SelectAI, HumanGame, Login
+from forms import *
 from lobby import show_open_games
 
 def save_script(s, n):
@@ -27,7 +26,7 @@ def uploads(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         
-        #process data here
+        #process script here
         if form.is_valid():        
             save_script(request.FILES['file'], request.POST['title'])
         
@@ -67,7 +66,8 @@ def human_game(request):
 
 def home(request):
     
-    #request.session.set_expiry(0)
+    request.session.set_expiry(0)
+    #this is for testing purposes only, remove when pushing to prod
 
     username = ''
     user_id = 0
@@ -138,6 +138,7 @@ def login(request):
                     p = u.password
                     
                     if password == p:
+                        request.session.flush()
                         request.session['user_id'] = u.id
                         request.session['user_name'] = u.user_name
                         request.session.set_expiry(3600)
@@ -157,47 +158,36 @@ def login(request):
             return render(request, 'login.html', {'form': form})
     
 
+def logout(request):
+    request.session.flush()
+    return HttpResponseRedirect('.')
 
+def signup(request):
+    if 'user_id' in request.session:                
+        if request.session['user_id'] != 0:
+            return HttpResponseRedirect('.')
 
-def get_home(user_id):
+    if request.method == 'POST':
+        form = Signup(request.POST)
+        
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+                
+            try:
+                u = users.objects.get(user_name = username)
+                form = Signup()
+                return render(request, 'signup.html', {'form': form})
 
-    if user_id != 'Guest':
-        try:
-            u = users.objects.get(pk=user_id)
-            name = u.user_name
-
-            string = '<!DOCTYPE html><html><head><title></title></head><body> \
-            Welcome %s! \
-            <ul> \
-            <li><a href="uploads">Upload Scripts</a></li> \
-            <li><a href="play_game">Play a game</a></li> \
-            <li><a href="human_game">Play a game against an AI</a></li> \
-            <li><a href="lobby">Game Lobby</a></li> \
-            <li><a href="logout">Log Out</a></li> \
-            </ul></body></html>' % (name)
-            
-        except:
-            name = 'Guest'
-            string = '<!DOCTYPE html><html><head><title></title></head><body> \
-            Welcome %s! To be able to retrieve your scripts, please login! \
-            <ul> \
-            <li><a href="login">Log In</a></li> \
-            <li><a href="uploads">Upload Scripts</a></li> \
-            <li><a href="play_game">Play a game</a></li> \
-            <li><a href="human_game">Play a game against an AI</a></li> \
-            <li><a href="lobby">Game Lobby</a></li> \
-            </ul></body></html>' % (name)
+            except:
+                u = users(user_name = username, password = password)
+                u.save()
+                request.session.flush()
+                request.session['user_name'] = u.user_name
+                request.session['user_id'] = u.id
+                return HttpResponseRedirect('.')
+                
     else:
-        name = 'Guest'
-        string = '<!DOCTYPE html><html><head><title></title></head><body> \
-        Welcome %s! To be able to retrieve your scripts, please login! \
-        <ul> \
-        <li><a href="login">Log In</a></li> \
-        <li><a href="uploads">Upload Scripts</a></li> \
-        <li><a href="play_game">Play a game</a></li> \
-        <li><a href="human_game">Play a game against an AI</a></li> \
-        <li><a href="lobby">Game Lobby</a></li> \
-        </ul></body></html>' % (name)
+        form = Signup()
+        return render(request, 'signup.html', {'form': form})
 
-
-    return string
