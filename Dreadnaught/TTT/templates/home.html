@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+    <p>{{ username }}</p>
+    <p> {{ user_id }} </p>
+    <ul>
+      {%if user_id == 0 %}
+	<li><a href="login">Log In</a></li>
+      {% endif %}
+	<li><a href="uploads">Upload Scripts</a></li>
+	<li><a href="play_game">Play a game</a></li>
+	<li><a href="human_game">Play a game against an AI</a></li>
+	<li><a href="lobby">Game Lobby</a></li>
+      {% if user_id != 0 %}
+	<li><a href="logout">Log Out</a></li>
+      {% endif %}
+    </ul>
+{% endblock %}

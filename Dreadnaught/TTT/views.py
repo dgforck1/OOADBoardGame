@@ -66,18 +66,32 @@ def human_game(request):
 
 
 def home(request):
+    
+    #request.session.set_expiry(0)
+
+    username = ''
+    user_id = 0
 
     request.session.set_expiry(0)
-    if 'user_id' in request.session:
-        results = get_home(request.session['user_id'])        
+    if 'user_name' in request.session:
+            username = request.session['user_name']
+            if 'user_id' in request.session:
+                user_id = request.session['user_id']
     else:
-        if 'user_name' in request.session:
-            results = get_home(request.session['user_name'])
+        if 'user_id' in request.session:
+            u = users.objects.get(pk=request.session['user_id'])
+            username = u.user_name
+            user_id = request.session['user_id']
+            request.session['user_name'] = username        
         else:
             request.session['user_name'] = 'Guest'
-            results = get_home('Guest')
-        
-    return HttpResponse(results)
+            username = 'Guest'
+            user_id = 0
+            
+    
+    return render(request, 'home.html', \
+                  {'username': username, 'user_id': user_id})
+
 
 def select_ai(request):
     if request.method == 'POST':
@@ -125,6 +139,8 @@ def login(request):
                     
                     if password == p:
                         request.session['user_id'] = u.id
+                        request.session['user_name'] = u.user_name
+                        request.session.set_expiry(3600)
                         return HttpResponseRedirect('.')
                     else:
                         return HttpResponse('incorrect username or password')
