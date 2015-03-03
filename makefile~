@@ -31,7 +31,3 @@ force_pull:
 cleanup:
 	#removes all the ~ files, which are just backups
 	find ./ -name '*~' | xargs rm
-
-reset_db:
-	#clear all of the records in the database
-	mysql --user=root --password=root < Dreadnaught/TTT/sql/reset_db.sql
