@@ -11,9 +11,9 @@ class SelectAI(forms.Form):
     ai2 = forms.ModelChoiceField(label = "AI 2", queryset=scripts.objects.all())
     
 
-class HumanGame(forms.Form):
-    ai1 = forms.ModelChoiceField(label = "AI 1", queryset=scripts.objects.all(), required=False, empty_label=None)
-    ai2 = forms.ModelChoiceField(label = "AI 2", queryset=scripts.objects.all(), required=False, empty_label=None)
+class SelectGame(forms.Form):
+    ai1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), required=False, empty_label='None')
+    ai2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), required=False, empty_label='None')
 
 
 class Login(forms.Form):

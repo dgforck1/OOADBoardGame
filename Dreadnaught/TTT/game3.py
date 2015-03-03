@@ -31,15 +31,15 @@ def state_check(board, state):
     elif board[0] == board[4] == board[8] != ' ':
         return state_translate(board[0])
     elif board[1] == board[4] == board[7] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[1])
     elif board[2] == board[4] == board[6] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[2])
     elif board[2] == board[5] == board[8] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[2])
     elif board[3] == board[4] == board[5] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[3])
     elif board[6] == board[7] == board[8] != ' ':
-        return state_translate(board[0])
+        return state_translate(board[6])
     else:
         for i, pos in enumerate(board):
             if pos == ' ':
@@ -58,19 +58,23 @@ def print_board(board):
 
 def create_html(history, state):
     pieces = []
+    
     for i in range(9):
-        pieces.append(' ')
+        pieces.append('&nbsp; &nbsp;')
+        
     l = len(history)
+    
     if state == 1:
         statement = 'X\'s Turn'
     elif state == 2:
         statement = 'O\'s Turn'
     elif state == 3:
-        statement = 'X\'s Win'
+        statement = 'X Wins'
     elif state == 4:
-        statement = 'O\'s Win'
+        statement = 'O Wins'
     elif state == 5:
         statement = 'Draw'
+        
     html_str = '<!DOCTYPE html> \
     <html> \
     <head> \
@@ -123,16 +127,13 @@ def play(game):
     hist = []
     state = 1
 
-    ai1 = ''
-    for l in game.ai1script:
-        ai1 += l
+    ai1 = game.ai1script.location
+    ai2 = game.ai2script.location
     ai1 = ai1.split('/')
-    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))
-    ai2 = ''
-    for l in game.ai2script:
-        ai2 += l
-    ai2 = ai1.split('/')
+    ai2 = ai2.split('/')    
+    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))           
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
+
 
     while True:
         if state == 1:
@@ -154,8 +155,20 @@ def play(game):
 
     game.history = temp
     game.state = state
-    q.save()
+    game.save()
 
+    if state == 3:
+        game.ai1script.wins +=1
+        game.ai2script.losses +=1
+    elif state == 4:
+        game.ai1script.losses +=1
+        game.ai2script.wins +=1
+    elif state == 5:
+        game.ai1script.draws +=1
+        game.ai2script.draws +=1
+
+    game.ai1script.save()
+    game.ai2script.save()
     return create_html(hist, state)
 
 
@@ -202,15 +215,3 @@ def play3(game):
     q.save()
 
     return create_html(hist, state)
-
-
-
-def main():
-    while True:
-        for game in pending_games.objects.all():
-            play(game)
-        time.sleep(1)
-
-
-
-main()

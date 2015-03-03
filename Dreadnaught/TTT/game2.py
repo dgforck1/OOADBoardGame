@@ -56,6 +56,71 @@ def print_board(board):
 
 
 
+def create_html2(history, state):
+    pieces = []
+    
+    for i in range(9):
+        pieces.append('&nbsp; &nbsp;')
+
+    for i, move in enumerate(history):
+        if i % 2 == 0:
+            pieces[move] = 'X'
+        else:
+            pieces[move] = 'O'
+    
+    if state == 1:
+        statement = 'X\'s Turn'
+    elif state == 2:
+        statement = 'O\'s Turn'
+    elif state == 3:
+        statement = 'X Wins'
+    elif state == 4:
+        statement = 'O Wins'
+    elif state == 5:
+        statement = 'Draw'
+        
+    html_str = '<!DOCTYPE html> \
+    <html> \
+    <head> \
+    <meta charset=UTF-8> \
+    <title>Tic-Tac-Toe</title> \
+    </head> \
+    <body> \
+    <h1>Welcome!</h1> \
+    <h2>Tic-Tac-Toe</h2> \
+    <select name="Moves"> \
+    '
+
+    available = range(9)
+    for a in available:
+        if a in history:
+            available.remove(a)
+
+    for a in available:
+        html_str += '<option value="%d">%d</option> \
+        ' % (a, a)
+
+    html_str += '</select> \
+    <table border=1> \
+    '
+
+    for i in range(0, 9, 3):
+        html_str += '<tr> \
+        <th>%s</th> \
+        <th>%s</th> \
+        <th>%s</th> \
+        </tr> \
+        ' % (pieces[i], pieces[i + 1], pieces[i + 2])
+
+    html_str += '</table> \
+    <p>%s</p> \
+    </body> \
+    </html>' % (statement)
+
+    return html_str
+
+
+
 def create_html(history, state):
     pieces = []
     
@@ -173,7 +238,9 @@ def play(game):
 
 
 
-def play3(game):
+def play2(game):
+    if game is None:
+        return 'Broken'
     if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
         return 'Broken'
 
@@ -192,16 +259,23 @@ def play3(game):
 
         hist.append(pos)
 
-    ai = game.ai1script.split('/')
 
     if game.state == 1:
-        exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
-        piece = 'x'
-        hist.append(get_move1(board, 0, piece))
+        ai = game.ai1script.location
+
+        if not ai is None:
+            ai = ai.split('/')
+            exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
+            piece = 'x'
+            hist.append(get_move1(board, 0, piece))
     elif game.state == 2:
-        exec('from scripts.{0} import get_move as get_move2'.format(ai[-1].rstrip('.py')))
-        piece = 'o'
-        hist.append(get_move2(board, 0, piece))
+        ai = game.ai2script.location
+
+        if not ai is None:
+            ai = ai.split('/')
+            exec('from scripts.{0} import get_move as get_move2'.format(ai[-1].rstrip('.py')))
+            piece = 'o'
+            hist.append(get_move2(board, 0, piece))
 
     board[hist[-1]] = piece
     state = state_check(board, state)

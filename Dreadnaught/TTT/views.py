@@ -43,24 +43,28 @@ def game_lobby(request):
     return HttpResponse(results)
 
 
-def human_game(request):
+def select_game(request):
     if request.method == 'POST':
-        form = HumanGame(request.POST)
+        form = SelectGame(request.POST)
 
         if form.is_valid():
-            ai1 = form.cleaned_data['ai1']
-            ai2 = form.cleaned_data['ai2']
+            ai1 = form.cleaned_data['player1']
+            ai2 = form.cleaned_data['player2']
 
             g = game(ai1script = ai1, ai2script  = ai2)
             g.save()
 
-            results = play(g)
+            results = play2(g)
 
             return HttpResponse(results)
     else:
-        form = HumanGame()
+        form = SelectGame()
 
-    return render(request, 'human_game.html', {'form': form})
+    return render(request, 'select_game.html', {'form': form})
+
+
+def human_game(request):
+    return HttpResponse(play2(None))
 
 
 
