@@ -1,22 +1,20 @@
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
-from settings import SCRIPTS_FOLDER
 
 from TTT.models import users, scripts, game
 from game2 import play
 from forms import *
 from lobby import show_open_games
 
-def save_script(s, n, request):
-    
-    currentuser = request.session['user_id']
-    currentuser = users.objects.get(pk = currentuser)
+def save_script(s, n):
+    currentuser = users.objects.get(pk=1)
         
     sc = scripts(user_id = currentuser, name = n)
     sc.save()
+    
+    path = '/home/student/Desktop/Ciss438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
+    #path = '/home/student/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/%s%s.py' % (currentuser.user_name, sc.id)
 
-
-    path = SCRIPTS_FOLDER + '%s%s.py' % (currentuser.user_name, sc.id)
     sc.location = path
     sc.save()
 
@@ -30,7 +28,7 @@ def uploads(request):
         
         #process script here
         if form.is_valid():        
-            save_script(request.FILES['file'], request.POST['title'], request)
+            save_script(request.FILES['file'], request.POST['title'])
         
             return HttpResponseRedirect('.')
 
