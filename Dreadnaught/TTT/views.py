@@ -162,6 +162,7 @@ def logout(request):
     request.session.flush()
     return HttpResponseRedirect('.')
 
+
 def signup(request):
     if 'user_id' in request.session:                
         if request.session['user_id'] != 0:
