@@ -2,9 +2,7 @@
 {% block nav %}{{ block.super }}{% endblock %}
 {% block content %}
       <message>{{ message }}</message>
-      <code>
       {% for string in file_string %}
-      {{string}}<br />
+      <pre>{{string}}</pre>
       {% endfor %}
-      </code>
 {% endblock %}
