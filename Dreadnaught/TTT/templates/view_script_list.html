@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+      <message>{{ message }}</message>
+    <table border="1" style="solid">
+	<tr>
+	  <td>Script ID</td>
+	  <td>Script Name</td>
+	  <td>Wins</td>
+	  <td>Losses</td>
+	  <td>Draws</td>
+	</tr>
+
+	{% for script in scripts %}
+	<tr>
+	  <td>{{ script.id }}</td>
+	  <td>{{ script.name }}</td>
+	  <td>{{ script.wins }}</td>
+	  <td>{{ script.losses }}</td>
+	  <td>{{ script.draws }}</td>
+	</tr>
+	{% endfor %}
+      </table>
+{% endblock %}

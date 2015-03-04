@@ -180,21 +180,62 @@ def signup(request):
         if form.is_valid():
             username = request.POST['username']
             password = request.POST['password']
-                
-            try:
-                u = users.objects.get(user_name = username)
-                form = Signup()
-                return render(request, 'signup.html', {'form': form})
+            confirm_pass = request.POST['confirm_pass']
+            email = request.POST['email']
 
-            except:
-                u = users(user_name = username, password = password)
-                u.save()
-                request.session.flush()
-                request.session['user_name'] = u.user_name
-                request.session['user_id'] = u.id
-                return HttpResponseRedirect('.')
+            if password == confirm_pass:
+                try:
+                    u = users.objects.get(user_name = username)
+                    form = Signup()
+                    message = "That user already exists"
+                    return render(request, 'signup.html', {'form': form, \
+                                                           'message': message})
+
+                except:                
+                    try:
+                        u = users.objects.get(email = email)
+                        form = Signup()
+                        message = "That email already exists"
+                        return render(request, 'signup.html', {'form': form, \
+                                                               'message': message})
+                    except:
+                        u = users(user_name = username, password = password, \
+                                  email = email)
+                        u.save()
+                        request.session.flush()
+                        request.session['user_name'] = u.user_name
+                        request.session['user_id'] = u.id
+                        return HttpResponseRedirect('.')
+            else:
+                message = "Passwords don't match"
+                return render(request, 'signup.html', {'form': form, \
+                                                       'message': message})
+            
                 
     else:
         form = Signup()
         return render(request, 'signup.html', {'form': form})
 
+
+def view_script_list(request):
+    
+    if 'user_id' in request.session:
+        if request.session['user_id'] > 0:
+            u = request.session['user_id']
+            u = users.objects.get(id = u)
+            
+            #try:
+            user_scripts = scripts.objects.filter(user_id = u.id)                
+            return render(request, 'view_script_list.html', \
+                          {'scripts': user_scripts})
+            '''
+            except:
+                message = "You don't have any scripts!"
+                
+                return render(request, 'view_script_list.html', \
+                              {'message': message})
+            '''
+        else:
+            return HttpResponseRedirect('.')
+    
+    return HttpResponseRedirect('.')

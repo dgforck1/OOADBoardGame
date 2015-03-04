@@ -12,10 +12,8 @@ class SelectAI(forms.Form):
     
 
 class SelectGame(forms.Form):
-    ai1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
-                                 required=False, empty_label='None')
-    ai2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
-                                 required=False, empty_label='None')
+    ai1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), required=False, empty_label='None')
+    ai2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), required=False, empty_label='None')
 
 
 class Login(forms.Form):
@@ -25,9 +23,4 @@ class Login(forms.Form):
 
 class Signup(forms.Form):
     username = forms.CharField(label="User Name", max_length = 20)
-    email = forms.EmailField(label = "Email", max_length = 50)
-    password = forms.CharField(label="Password", widget=forms.PasswordInput, \
-                               max_length = 50)
-    confirm_pass = forms.CharField(label = "Confirm Password", \
-                                   widget=forms.PasswordInput, max_length = 50)
-    
+    password = forms.CharField(widget=forms.PasswordInput)
