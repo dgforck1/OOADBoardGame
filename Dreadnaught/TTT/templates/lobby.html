@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+      <message>{{ message }}</message>
+    <table border="1" style="solid">
+	<tr>
+	  <td>Username</td>
+	  <td>Game ID</td>
+	</tr>
+
+	{% for games in game %}
+	<tr>
+	  <td>{{ games.player1.user_name }}</td>
+	  <td>{{ games.id }}</td>
+	 <!-- <td><a href = "view_script_list/{{ script.id }}">View</a></td> -->
+	</tr>
+	{% endfor %}
+      </table>
+{% endblock %}
