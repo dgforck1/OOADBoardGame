@@ -224,18 +224,54 @@ def view_script_list(request):
             u = request.session['user_id']
             u = users.objects.get(id = u)
             
-            #try:
-            user_scripts = scripts.objects.filter(user_id = u.id)                
-            return render(request, 'view_script_list.html', \
+            try:
+                user_scripts = scripts.objects.filter(user_id = u.id) 
+                return render(request, 'view_script_list.html', \
                           {'scripts': user_scripts})
-            '''
+            
             except:
                 message = "You don't have any scripts!"
                 
                 return render(request, 'view_script_list.html', \
                               {'message': message})
-            '''
+            
         else:
             return HttpResponseRedirect('.')
     
     return HttpResponseRedirect('.')
+
+
+def view_script(request, id):
+    try:
+        id = int(id)
+
+        
+    except:
+        message = "Invalid script id"
+        return HttpResponseRedirect(message)
+
+    try:
+        script = scripts.objects.get(pk=id)
+
+        import os
+        location = script.location
+        module_dir = os.path.dirname(__file__)  
+        file_path = os.path.join(module_dir, location)
+
+        file = open(file_path)
+
+        file_string = []
+        
+        for line in file.readlines():
+            file_string.append(line)
+            
+
+        return render(request, 'view_script.html', \
+                      {'file_string': file_string})
+
+    except:
+        message = "Invalid script id"
+        return HttpResponseRedirect(message)
+
+
+    return HttpResponse('a')
