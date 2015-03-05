@@ -4,16 +4,31 @@
       <message>{{ message }}</message>
     <table border="1" style="solid">
 	<tr>
-	  <td>Username</td>
-	  <td>Game ID</td>
+	  <th>&nbsp;Username&nbsp;</th>
+	  <th>&nbsp;Game ID&nbsp;</th>
+	  <th>&nbsp;Join&nbsp;</th>
 	</tr>
 
-	{% for games in game %}
+	{% for game in games %}
 	<tr>
-	  <td>{{ games.player1.user_name }}</td>
-	  <td>{{ games.id }}</td>
-	 <!-- <td><a href = "view_script_list/{{ script.id }}">View</a></td> -->
+	  <td>{{ game.player1.user_name }}</td>
+	  <td>{{ game.id }}</td>
+	  <td><a href = "">&nbsp;Join&nbsp;</a></td>
 	</tr>
 	{% endfor %}
-      </table>
+	</table>
+	<br>
+
+	<table border="1" style="solid">
+	<tr>
+	  <th>&nbsp;Available AI&nbsp;</th>
+	  <th>Join</th>
+	</tr>
+	{% for ai in AI %}
+	<tr>
+	  <td>{{ ai.name }}</td> 
+	  <td><a href = "">&nbsp;Join&nbsp;</a></td>
+	</tr>
+	{% endfor %}
+	</table>
 {% endblock %}

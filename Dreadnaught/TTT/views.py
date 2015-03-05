@@ -41,8 +41,27 @@ def uploads(request):
 
 
 def game_lobby(request):
-    results = show_open_games()
-    return HttpResponse(results)
+    if 'user_id' in request.session:
+        if request.session['user_id'] > 0:
+            u = request.session['user_id']
+            u = users.objects.get(id = u)
+            
+            try:
+                all_games = game.objects.filter(state=0)
+                all_AI = scripts.objects.all()
+                return render(request, 'lobby.html', \
+                          {'games': all_games, 'AI' : all_AI})
+            
+            except:
+                message = "No games available"
+                
+                return render(request, 'lobby.html', \
+                              {'message': message})
+            
+        else:
+            return HttpResponseRedirect('.')
+    
+    return HttpResponseRedirect('.')
 
 
 def select_game(request):
