@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
 
 from TTT.models import users, scripts, game
-from game2 import play
+from game2 import play, play_turn
 from forms import *
 from lobby import show_open_games
 
@@ -53,12 +53,15 @@ def select_game(request):
             ai1 = form.cleaned_data['player1']
             ai2 = form.cleaned_data['player2']
 
-            g = game(ai1script = ai1, ai2script  = ai2)
+            g = game(ai1script = ai1, ai2script  = ai2, state = 1)
             g.save()
 
-            results = play2(g)
+            print (g.state)
+            gid = g.id
 
-            return HttpResponse(results)
+            results = play_turn(g)
+
+            return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
     else:
         form = SelectGame()
 
@@ -66,8 +69,27 @@ def select_game(request):
 
 
 def human_game(request):
-    return HttpResponse(play2(None))
+    if request.method == 'POST':
+        form = HumanGame(request.POST)
 
+        if form.is_valid():
+            move = form.cleaned_data['move']
+
+        gid = request.POST['gameid']
+        print "Game ID:", gid
+
+        g = game.objects.get(id = gid)
+        g.history += '%d' % (move)
+        g.state = ((g.state % 2) + 1)
+        g.save()
+
+        results = play_turn(g)
+    else:
+        form = HumanGame()
+        results = 'Suck a dick'
+
+    return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
+    
 
 
 def home(request):

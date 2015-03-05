@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block nav %}{{ block.super }}{% endblock %}
 {% block content %}
-<form action="select_game" method="POST">
+<form action="human_game" method="POST">
       {% csrf_token %}
       {{ form }}
+      <input type = "hidden" name = "gameid" value = {{ gid }}>
       <input type = "submit" value = "Submit" />
 </form>
+{{html_string|safe}}
 {% endblock %}

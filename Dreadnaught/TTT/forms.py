@@ -12,10 +12,14 @@ class SelectAI(forms.Form):
     
 
 class SelectGame(forms.Form):
-    ai1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
+    player1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
                                  required=False, empty_label='None')
-    ai2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
+    player2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
                                  required=False, empty_label='None')
+    
+
+class HumanGame(forms.Form):
+    move = forms.IntegerField(label = "Move",  max_value = 8, min_value = 0)
 
 
 class Login(forms.Form):

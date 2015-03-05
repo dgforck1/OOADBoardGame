@@ -79,30 +79,11 @@ def create_html2(history, state):
     elif state == 5:
         statement = 'Draw'
         
-    html_str = '<!DOCTYPE html> \
-    <html> \
-    <head> \
-    <meta charset=UTF-8> \
-    <title>Tic-Tac-Toe</title> \
-    </head> \
-    <body> \
-    <h1>Welcome!</h1> \
+    html_str = '<h1>Welcome!</h1> \
     <h2>Tic-Tac-Toe</h2> \
-    <select name="Moves"> \
     '
 
-    available = range(9)
-    for a in available:
-        if a in history:
-            available.remove(a)
-
-    for a in available:
-        html_str += '<option value="%d">%d</option> \
-        ' % (a, a)
-
-    html_str += '</select> \
-    <table border=1> \
-    '
+    html_str += '<table border=1>'
 
     for i in range(0, 9, 3):
         html_str += '<tr> \
@@ -113,9 +94,7 @@ def create_html2(history, state):
         ' % (pieces[i], pieces[i + 1], pieces[i + 2])
 
     html_str += '</table> \
-    <p>%s</p> \
-    </body> \
-    </html>' % (statement)
+    <p>%s</p>' % (statement)
 
     return html_str
 
@@ -226,11 +205,11 @@ def play(game):
         game.ai1script.wins +=1
         game.ai2script.losses +=1
     elif state == 4:
-        game.ai1script.losses +=1
-        game.ai2script.wins +=1
+        game.ai1script.losses += 1
+        game.ai2script.wins += 1
     elif state == 5:
-        game.ai1script.draws +=1
-        game.ai2script.draws +=1
+        game.ai1script.draws += 1
+        game.ai2script.draws += 1
 
     game.ai1script.save()
     game.ai2script.save()
@@ -238,15 +217,14 @@ def play(game):
 
 
 
-def play2(game):
+def play_turn(game):
     if game is None:
-        return 'Broken'
+        return 'No Game Passed'
     if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
-        return 'Broken'
+        return 'Wrong State'
 
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
     hist = []
-    state = 0
     ai = None
 
     for i, l in enumerate(game.history):
@@ -259,26 +237,32 @@ def play2(game):
 
         hist.append(pos)
 
+    piece = ''
 
     if game.state == 1:
-        ai = game.ai1script.location
+        ai = game.ai1script
 
-        if not ai is None:
-            ai = ai.split('/')
-            exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
-            piece = 'x'
-            hist.append(get_move1(board, 0, piece))
+        if ai == None:
+            return create_html2(hist, game.state)
+
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
+        piece = 'x'
+        hist.append(get_move1(board, 0, piece))
     elif game.state == 2:
-        ai = game.ai2script.location
+        ai = game.ai2script
 
-        if not ai is None:
-            ai = ai.split('/')
-            exec('from scripts.{0} import get_move as get_move2'.format(ai[-1].rstrip('.py')))
-            piece = 'o'
-            hist.append(get_move2(board, 0, piece))
+        if ai == None:
+            return create_html2(hist, game.state)
+        
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move2'.format(ai.location[-1].rstrip('.py')))
+        piece = 'o'
+        hist.append(get_move2(board, 0, piece))
+
 
     board[hist[-1]] = piece
-    state = state_check(board, state)
+    state = state_check(board, game.state)
     temp = ''
 
     for move in hist:
@@ -286,6 +270,6 @@ def play2(game):
 
     game.history = temp
     game.state = state
-    q.save()
+    game.save()
 
-    return create_html(hist, state)
+    return create_html2(hist, state)
