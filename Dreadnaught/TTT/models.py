@@ -24,6 +24,9 @@ class scripts(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        unique_together = ('user_id', 'name')
+
 
 class game(models.Model):
     player1 = models.ForeignKey(users, blank=True, null=True, related_name='p1')
@@ -35,6 +38,8 @@ class game(models.Model):
     history = models.CharField(max_length=9, default='')
     def __unicode__(self):
         return self.state
+
+
 
 
 #the models below this line are depricated
