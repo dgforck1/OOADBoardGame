@@ -9,8 +9,7 @@
 	  <td>Wins</td>
 	  <td>Losses</td>
 	  <td>Draws</td>
-	  <td>View Script</td>
-	  <td>View Games</td>
+	  <td>View</td>
 	</tr>
 
 	{% for script in scripts %}
@@ -21,7 +20,6 @@
 	  <td>{{ script.losses }}</td>
 	  <td>{{ script.draws }}</td>
 	  <td><a href = "view_script_list/{{ script.id }}">View</a></td>
-	  <td><a href = "view_script_games/{{ script.id }}">View</a></td>
 	</tr>
 	{% endfor %}
       </table>

@@ -88,6 +88,8 @@ def select_game(request):
 
 
 def human_game(request):
+    gid = -1
+    
     if request.method == 'POST':
         form = HumanGame(request.POST)
 
@@ -105,6 +107,7 @@ def human_game(request):
         results = play_turn(g)
     else:
         form = HumanGame()
+        gid = -1
         results = 'Suck a dick'
 
     return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
@@ -251,11 +254,17 @@ def signup(request):
                 message = "Passwords don't match"
                 return render(request, 'signup.html', {'form': form, \
                                                        'message': message})
+        else:
+            message = "Not valid!"
+            return render(request, 'signup.html', {'form': form, \
+                                                       'message': message})
             
                 
     else:
         form = Signup()
         return render(request, 'signup.html', {'form': form})
+
+    return HttpResponseRedirect('.')
 
 
 def view_script_list(request):
@@ -316,3 +325,74 @@ def view_script(request, id):
 
 
     return HttpResponse('a')
+
+def view_script_games(request, id):
+    try:
+        id = int(id)
+        
+        
+
+    except:
+        return HttpResponseRedirect('.')
+
+    try:
+        games = game.objects.filter(ai1script = id) |  \
+                game.objects.filter(ai2script = id)
+        #get all of the ai's games
+        
+        d = {'games' : games}
+
+        script = scripts.objects.get(pk=id)
+        d['name'] = script.name
+
+
+        
+        return render(request, 'view_script_games.html', d)
+    except:
+        return HttpResponseRedirect('.')
+
+
+    return HttpResponse('a')
+
+
+def game_results(request, id):
+
+    try:
+        id = int(id)
+        
+    except:
+        return HttpResponseRedirect('.')
+
+
+    #try:
+    import copy
+    games = game.objects.get(pk = id)
+    history = games.history
+    
+    d = {'game' : games}
+
+    historylist = []
+    board = ['&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;', \
+             '&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;', \
+             '&nbsp;&nbsp;']
+
+    temp = ''
+
+    for i in range(len(history)):        
+        b = int(history[i])
+        
+        if i % 2 == 0:
+            board[b] = 'X'
+        else:
+            board[b] = 'O'
+
+        historylist.append(copy.deepcopy(board))
+
+    
+    d['history'] = historylist
+        
+    return render(request, 'game_results.html', d)
+    '''
+    except:
+        return HttpResponseRedirect('../../')
+    '''

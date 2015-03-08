@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+    <message>{{ message }}</message>
+      <table>
+	<tr>
+	  <th>Game ID</th>
+	  <td>{{ game.id }}</td>
+	</tr>
+
+	<tr>
+	  <th>Player 1</th>
+	  <td>{{ game.player1.name }}</td>
+	</tr>
+	
+	<tr>
+	  <th>Player 2</th>
+	  <td>{{ game.player2.name }}</td>
+	</tr>
+
+	<tr>
+	  <th>AI 1</th>
+	  <td>{{ game.ai1script.name }}</td>
+	</tr>
+
+	<tr>
+	  <th>AI 2</th>
+	  <td>{{ game.ai2script.name }}</td>
+	</tr>
+
+	<tr>
+	  <th>State</th>
+	  <td>{% if game.state == 0 %}
+	    Pending
+	    {% elif game.state == 1 %}
+	    X's Turn
+	    {% elif game.state == 2 %}
+	    O's Turn
+	    {% elif game.state == 3 %}
+	    X Won
+	    {% elif game.state == 4 %}
+	    O Won
+	    {% elif game.state == 5 %}
+	    Draw Game
+	    {% endif %}
+	  </td>
+	</tr>
+      </table>
+      
+      {% for a in history %}
+      <p>
+      <table border='1'>
+	<tr>
+	  <th>{{ a.0|safe }}</th>
+	  <th>{{ a.1|safe }}</th>
+	  <th>{{ a.2|safe }}</th>
+	</tr>
+	<tr>
+	  <th>{{ a.3|safe }}</th>
+	  <th>{{ a.4|safe }}</th>
+	  <th>{{ a.5|safe }}</th>
+	</tr>
+	<tr>
+	  <th>{{ a.6|safe }}</th>
+	  <th>{{ a.7|safe }}</th>
+	  <th>{{ a.8|safe }}</th>
+	</tr>	  
+      </table>
+      </p>
+      {% endfor %}
+{% endblock %}
