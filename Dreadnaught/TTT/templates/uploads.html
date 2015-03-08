@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block nav %}{{ block.super }}{% endblock %}
 {% block content %}
-<form action="uploads" method="POST" enctype="multipart/form-data">
+      <message>{{ message }}</message>
+    <form action="uploads" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form }}
       <input type = "submit" value = "Submit" />
-</form>
+    </form>
 {% endblock %}

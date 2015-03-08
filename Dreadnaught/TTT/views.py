@@ -11,28 +11,52 @@ def save_script(s, n, request):
     
     currentuser = request.session['user_id']
     currentuser = users.objects.get(pk = currentuser)
+
+
+    already_exists = scripts.objects.filter(user_id = currentuser, name = n)
+
+    if already_exists:
+        return ['Script must have a unique name', 0]
+    else:
         
-    sc = scripts(user_id = currentuser, name = n)
-    sc.save()
+        sc = scripts(user_id = currentuser, name = n)
+        sc.save()
+
+    
+        try:
+            path = SCRIPTS_FOLDER + '%s%s.py' % (currentuser.user_name, sc.id)
+            sc.location = path
+            sc.save()
+
+            with open(path, 'wb+') as destination:
+                for chunk in s.chunks():
+                    destination.write(chunk)
+                
+                    return ['Script uploaded successfully!', 1]
+        except:
+            return ['Script failed to save, please try again', 0]
 
 
-    path = SCRIPTS_FOLDER + '%s%s.py' % (currentuser.user_name, sc.id)
-    sc.location = path
-    sc.save()
 
-    with open(path, 'wb+') as destination:
-        for chunk in s.chunks():
-            destination.write(chunk)
 
 def uploads(request):    
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         
         #process script here
-        if form.is_valid():        
-            save_script(request.FILES['file'], request.POST['title'], request)
-        
-            return HttpResponseRedirect('.')
+        if form.is_valid():
+            message = save_script(request.FILES['file'], \
+                                  request.POST['title'], request)
+
+            if message[1] == 1:
+                form = UploadFileForm() #reset form
+
+
+            d = {'form': form}
+            d['message'] = message[0]
+                
+            
+            return render(request, 'uploads.html', d)            
 
     else:
         form = UploadFileForm()
