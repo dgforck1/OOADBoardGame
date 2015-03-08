@@ -4,12 +4,7 @@
 <message>{{ message }}</message>
 <form action="signup" method="POST" >
       {% csrf_token %}
-      <formtable>
-	<table>
-	  {{ form.as_table }}
-	</table>
-      </formtable>
-
+      {{ form.as_ul }}
       <input type = "submit" value = "Submit" />
 </form>
 {% endblock %}
