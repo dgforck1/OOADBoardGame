@@ -7,6 +7,15 @@ from game2 import play, play_turn
 from forms import *
 from lobby import show_open_games
 
+
+def get_user(request):
+    if 'user_id' in request.session:
+        if request.session['user_id'] > 0:
+            u = request.session['user_id']
+            u = users.objects.get(id = u)
+
+            return u
+
 def save_script(s, n, request):
     
     currentuser = request.session['user_id']
@@ -132,7 +141,7 @@ def human_game(request):
     else:
         form = HumanGame()
         gid = -1
-        results = 'Suck a dick'
+        results = 'Nope!'
 
     return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
     
@@ -264,8 +273,9 @@ def signup(request):
                         u = users.objects.get(email = email)
                         form = Signup()
                         message = "That email already exists"
-                        return render(request, 'signup.html', {'form': form, \
-                                                               'message': message})
+                        return render(request, 'signup.html', \
+                                      {'form': form, 'message': message})
+                    
                     except:
                         u = users(user_name = username, password = password, \
                                   email = email)
@@ -420,3 +430,14 @@ def game_results(request, id):
     except:
         return HttpResponseRedirect('../../')
     '''
+
+def profile(request):
+    u = get_user(request)
+
+    if u:
+        
+        return render(request, 'profile.html', {'user': u})
+    else:
+        return HttpResponseRedirect('/TTT/')
+
+    

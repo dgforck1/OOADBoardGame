@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+      <message>{{ message }}</message>
+      <table>
+	<tr><th>User Name</th><td>{{ user.user_name }}</td></tr>
+	<tr><th>E-Mail</th><td>{{ user.email }}</td></tr>
+	<tr><th>Wins</th><td>{{ user.wins }}</td></tr>
+	<tr><th>Losses</th><td>{{ user.losses }}</td></tr>
+	<tr><th>Draws</th><td>{{ user.draws }}</td></tr>
+      </table>
+    <p>
+    <ul>
+	<li><a href = "">View Games</a></li>
+	<li><a href = "">Change Password</a></li>
+    </ul>
+      </p>
+{% endblock %}

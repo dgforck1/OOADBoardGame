@@ -25,6 +25,7 @@ urlpatterns = patterns('',
         name='View Script Games'),
     url(r'^game_results/(\d+)/$', views.game_results, \
         name='Game Results'),
-                       
+    url(r'^profile/$', views.profile, \
+        name='Game Results'),
     
 )

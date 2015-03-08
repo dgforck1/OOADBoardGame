@@ -29,10 +29,14 @@ class scripts(models.Model):
 
 
 class game(models.Model):
-    player1 = models.ForeignKey(users, blank=True, null=True, related_name='p1')
-    player2 = models.ForeignKey(users, blank=True, null=True, related_name='p2')
-    ai1script = models.ForeignKey(scripts, blank=True, null=True, related_name='s1')
-    ai2script = models.ForeignKey(scripts, blank=True, null=True, related_name='s2')
+    player1 = models.ForeignKey(users, blank=True, null=True, \
+                                related_name='p1')
+    player2 = models.ForeignKey(users, blank=True, null=True, \
+                                related_name='p2')
+    ai1script = models.ForeignKey(scripts, blank=True, null=True, \
+                                  related_name='s1')
+    ai2script = models.ForeignKey(scripts, blank=True, null=True, \
+                                  related_name='s2')
     state = models.IntegerField(default=0)
         #0: pending, 1: x's turn, 2: o's turn, 3: x won, 4: o won, 5: draw
     history = models.CharField(max_length=9, default='')
