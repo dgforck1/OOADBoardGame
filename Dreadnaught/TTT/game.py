@@ -1,27 +1,113 @@
 import time
-from TTT.models import pending_games, game_results
+from django.shortcuts import HttpResponse, render
+from django.http import HttpResponseRedirect
+from settings import SCRIPTS_FOLDER
+from TTT.models import game
+from forms import SelectGame, PlayGame
+from views import game_results
 
 
 
-def endgame_check(board):
-    if board[0] == board[1] == board[2] != ' ':
-        return board[0]
-    elif board[0] == board[3] == board[6] != ' ':
-        return board[0]
-    elif board[0] == board[4] == board[8] != ' ':
-        return board[0]
-    elif board[1] == board[4] == board[7] != ' ':
-        return board[1]
-    elif board[2] == board[4] == board[6] != ' ':
-        return board[2]
-    elif board[2] == board[5] == board[8] != ' ':
-        return board[2]
-    elif board[3] == board[4] == board[5] != ' ':
-        return board[3]
-    elif board[6] == board[7] == board[8] != ' ':
-        return board[6]
+class Game:
+    def __init__(self):
+        self.id = 0
+        self.state = 1
+        self.history = ""
+        self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai1.py"
+        self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
+
+
+def select_game(request):
+    if request.method == 'POST':
+        form = SelectGame(request.POST)
+
+        if form.is_valid():
+            ai1 = form.cleaned_data['player1']
+            ai2 = form.cleaned_data['player2']
+
+            g = game(ai1script = ai1, ai2script  = ai2, state = 1)
+            g = game(ai1script = ai1, ai2script  = ai2)
+            g.save()
+
+            if ai1 is "None" and ai2 is "None":
+                #Human vs Human, FUCK ASYNCH CALLS
+                #That is all
+                return render(request, 'select_game.html', {'form': form})
+            elif ai1 is "None" or ai2 is "None":
+                gid = g.id
+
+                results = play_turn(g)
+
+                #play_game view should actually handle any game involving humans
+                return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
+            else:
+                results = play(g)
+                return game_results(request, g.id)
     else:
-        return ''
+        form = SelectGame()
+
+    return render(request, 'select_game.html', {'form': form})
+
+
+def play_game(request):
+    gid = -1
+    
+    if request.method == 'POST':
+        form = PlayGame(request.POST)
+
+        if form.is_valid():
+            move = form.cleaned_data['move']
+
+        gid = request.POST['gameid']
+        print "Game ID:", gid
+
+        g = game.objects.get(id = gid)
+        g.history += '%d' % (move)
+        g.state = ((g.state % 2) + 1)
+        g.save()
+
+        results = play_turn(g)
+    else:
+        form = PlayGame()
+        gid = -1
+        results = 'Nope!'
+
+    return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
+
+
+
+def state_translate(piece):
+    if piece == 'x':
+        return 3
+    elif piece == 'o':
+        return 4
+    else:
+        return 5
+
+
+
+def state_check(board, state):
+    if board[0] == board[1] == board[2] != ' ':
+        return state_translate(board[0])
+    elif board[0] == board[3] == board[6] != ' ':
+        return state_translate(board[0])
+    elif board[0] == board[4] == board[8] != ' ':
+        return state_translate(board[0])
+    elif board[1] == board[4] == board[7] != ' ':
+        return state_translate(board[1])
+    elif board[2] == board[4] == board[6] != ' ':
+        return state_translate(board[2])
+    elif board[2] == board[5] == board[8] != ' ':
+        return state_translate(board[2])
+    elif board[3] == board[4] == board[5] != ' ':
+        return state_translate(board[3])
+    elif board[6] == board[7] == board[8] != ' ':
+        return state_translate(board[6])
+    else:
+        for i, pos in enumerate(board):
+            if pos == ' ':
+                return ((state % 2) + 1)
+        return 5
 
 
 
@@ -33,38 +119,86 @@ def print_board(board):
 
 
 
-def create_html(history, winner):
-	
-	#history is just a list of indicies of the moves
-	#winner is one of three things, x, o, or empty (to denote a draw)
-	#needs to return the html string that David was talking about
+def create_ingame_html(history, state):
+    pieces = []
+    
+    for i in range(9):
+        pieces.append('&nbsp; &nbsp;')
 
-        pieces = []
+    for i, move in enumerate(history):
+        if i % 2 == 0:
+            pieces[move] = 'X'
+        else:
+            pieces[move] = 'O'
+    
+    if state == 1:
+        statement = 'X\'s Turn'
+    elif state == 2:
+        statement = 'O\'s Turn'
+    elif state == 3:
+        statement = 'X Wins'
+    elif state == 4:
+        statement = 'O Wins'
+    elif state == 5:
+        statement = 'Draw'
         
-        if winner == '':
-            winner = 'No one'
-        
-        for i in range(9):
-            pieces.append(' ')
+    html_str = '<h1>Welcome!</h1> \
+    <h2>Tic-Tac-Toe</h2> \
+    '
 
-        l = len(history)
-        
-        for i in range(l):            
-            if i % 2:
-        	pieces[history[i]] = 'O'        	
-            else:
-                pieces[history[i]] = 'X'
+    html_str += '<table border=1>'
 
-	
-        html_str = '<!DOCTYPE html> \
-        <html> \
-        <head> \
-        <meta charset=UTF-8> \
-        <title>Tic-Tac-Toe</title> \
-        </head> \
-        <body> \
-        <h1>Welcome!</h1> \
-        <h2>Tic-Tac-Toe</h2> \
+    for i in range(0, 9, 3):
+        html_str += '<tr> \
+        <th>%s</th> \
+        <th>%s</th> \
+        <th>%s</th> \
+        </tr> \
+        ' % (pieces[i], pieces[i + 1], pieces[i + 2])
+
+    html_str += '</table> \
+    <p>%s</p>' % (statement)
+
+    return html_str
+
+
+
+def create_results_html(history, state):
+    pieces = []
+    
+    for i in range(9):
+        pieces.append('&nbsp; &nbsp;')
+        
+    l = len(history)
+    
+    if state == 1:
+        statement = 'X\'s Turn'
+    elif state == 2:
+        statement = 'O\'s Turn'
+    elif state == 3:
+        statement = 'X Wins'
+    elif state == 4:
+        statement = 'O Wins'
+    elif state == 5:
+        statement = 'Draw'
+        
+    html_str = '<!DOCTYPE html> \
+    <html> \
+    <head> \
+    <meta charset=UTF-8> \
+    <title>Tic-Tac-Toe</title> \
+    </head> \
+    <body> \
+    <h1>Welcome!</h1> \
+    <h2>Tic-Tac-Toe</h2> \
+    '
+
+    for i, move in enumerate(history):
+        if i % 2 == 0:
+            pieces[move] = 'X'
+        else:
+            pieces[move] = 'O'
+        html_str += '\
         <table border=1> \
         <tr> \
         <th>%s</th> \
@@ -82,50 +216,131 @@ def create_html(history, winner):
         <th>%s</th> \
         </tr> \
         </table> \
-        <p>%s Wins!</p> \
-        </body> \
-        </html>' % (pieces[0], pieces[1], pieces[2], pieces[3], pieces[4], pieces[5], pieces[6], pieces[7], pieces[8], winner)
-        
-	return html_str
+        ' % (pieces[0], pieces[1], pieces[2], pieces[3], pieces[4], pieces[5], pieces[6], pieces[7], pieces[8])
+
+    html_str += '<p>%s</p> \
+    </body> \
+    </html>' % (statement)
+
+    return html_str
 
 
 
-def play(gid, path1, path2):
-    
+def play(game):
+    '''
+    IN DESPARATE NEED OF CLEANUP
+    WILL HANDLE WHEN CONVERTING TO CHECKERS
+    '''
+    if not (game.state is 0 or game.state is 1):
+        return 'Broken'
+
     board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
-    piece = ''
     hist = []
-    exec('from {0} import get_move as get_move1'.format(path1.rstrip('.py')))
-    exec('from {0} import get_move as get_move2'.format(path2.rstrip('.py')))
-    for i in range(9):
-        if i % 2:
-        	piece = 'o'
-        	hist.append(get_move2(board, 0, piece))
-        else:
-        	piece = 'x'
-        	hist.append(get_move1(board, 0, piece))
+    state = 1
+
+    ai1 = game.ai1script.location
+    ai2 = game.ai2script.location
+    ai1 = ai1.split('/')
+    ai2 = ai2.split('/')    
+    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))           
+    exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
+
+
+    while True:
+        if state == 1:
+            piece = 'x'
+            hist.append(get_move1(board, 0, piece))
+        elif state == 2:
+            piece = 'o'
+            hist.append(get_move2(board, 0, piece))
+
         board[hist[-1]] = piece
-        piece = endgame_check(board)
-        if not piece == '':
+        state = state_check(board, state)
+        temp = ''
+
+        if state != 1 and state != 2:
             break
-    temp = ''
+
     for move in hist:
         temp += '{0}'.format(move)
-    q = game_results(id = gid, history = temp)
-    q.save()
-    return create_html(hist, piece)
-    
 
-'''
-def main():    
-    while True:
-        for game in pending_games.objects.all():
-        	#Database needs to be updated to store scripts even if they are dummies
-            play(game.id, game.player1, game.player2)
-        pending_games.objects.all().delete()
-        time.sleep(5)
-'''
+    game.history = temp
+    game.state = state
+    game.save()
+
+    if state == 3:
+        game.ai1script.wins +=1
+        game.ai2script.losses +=1
+    elif state == 4:
+        game.ai1script.losses += 1
+        game.ai2script.wins += 1
+    elif state == 5:
+        game.ai1script.draws += 1
+        game.ai2script.draws += 1
+
+    game.ai1script.save()
+    game.ai2script.save()
+    return create_results_html(hist, state)
 
 
 
-#main()
+def play_turn(game):
+    '''
+    IN DESPARATE NEED OF CLEANUP
+    WILL HANDLE WHEN CONVERTING TO CHECKERS
+    '''
+    if game is None:
+        return 'No Game Passed'
+    if game.state == 0 or game.state == 3 or game.state == 4 or game.state == 5:
+        return 'Wrong State'
+
+    board = [' ',' ',' ',' ',' ',' ',' ',' ',' ']
+    hist = []
+    ai = None
+
+    for i, l in enumerate(game.history):
+        pos = int(l)
+
+        if i % 2 == 0:
+            board[pos] = 'x'
+        else:
+            board[pos] = 'o'
+
+        hist.append(pos)
+
+    piece = ''
+
+    if game.state == 1:
+        ai = game.ai1script
+
+        if ai == None:
+            return create_ingame_html(hist, game.state)
+
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
+        piece = 'x'
+        hist.append(get_move1(board, 0, piece))
+    elif game.state == 2:
+        ai = game.ai2script
+
+        if ai == None:
+            return create_ingame_html(hist, game.state)
+        
+        ai = ai.location.split('/')
+        exec('from scripts.{0} import get_move as get_move2'.format(ai.location[-1].rstrip('.py')))
+        piece = 'o'
+        hist.append(get_move2(board, 0, piece))
+
+
+    board[hist[-1]] = piece
+    state = state_check(board, game.state)
+    temp = ''
+
+    for move in hist:
+        temp += '{0}'.format(move)
+
+    game.history = temp
+    game.state = state
+    game.save()
+
+    return create_ingame_html(hist, state)

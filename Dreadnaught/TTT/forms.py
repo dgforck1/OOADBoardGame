@@ -6,11 +6,6 @@ class UploadFileForm(forms.Form):
     file = forms.FileField()
     
 
-class SelectAI(forms.Form):
-    ai1 = forms.ModelChoiceField(label = "AI 1", queryset=scripts.objects.all())
-    ai2 = forms.ModelChoiceField(label = "AI 2", queryset=scripts.objects.all())
-    
-
 class SelectGame(forms.Form):
     player1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
                                  required=False, empty_label='None')
@@ -18,7 +13,7 @@ class SelectGame(forms.Form):
                                  required=False, empty_label='None')
     
 
-class HumanGame(forms.Form):
+class PlayGame(forms.Form):
     move = forms.IntegerField(label = "Move",  max_value = 8, min_value = 0)
 
 

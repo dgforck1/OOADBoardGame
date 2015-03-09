@@ -3,7 +3,6 @@ from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
 
 from TTT.models import users, scripts, game
-from game2 import play, play_turn
 from forms import *
 from lobby import show_open_games
 
@@ -95,55 +94,6 @@ def game_lobby(request):
             return HttpResponseRedirect('.')
     
     return HttpResponseRedirect('.')
-
-
-def select_game(request):
-    if request.method == 'POST':
-        form = SelectGame(request.POST)
-
-        if form.is_valid():
-            ai1 = form.cleaned_data['player1']
-            ai2 = form.cleaned_data['player2']
-
-            g = game(ai1script = ai1, ai2script  = ai2, state = 1)
-            g.save()
-
-            print (g.state)
-            gid = g.id
-
-            results = play_turn(g)
-
-            return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
-    else:
-        form = SelectGame()
-
-    return render(request, 'select_game.html', {'form': form})
-
-
-def human_game(request):
-    gid = -1
-    
-    if request.method == 'POST':
-        form = HumanGame(request.POST)
-
-        if form.is_valid():
-            move = form.cleaned_data['move']
-
-        gid = request.POST['gameid']
-        print "Game ID:", gid
-
-        g = game.objects.get(id = gid)
-        g.history += '%d' % (move)
-        g.state = ((g.state % 2) + 1)
-        g.save()
-
-        results = play_turn(g)
-    else:
-        form = HumanGame()
-        gid = -1
-        results = 'Nope!'
-
-    return render(request, 'human_game.html', {'form': HumanGame(request.POST), 'gid': gid, 'html_string': results})
     
 
 
@@ -176,7 +126,7 @@ def home(request):
                   {'username': username, 'user_id': user_id})
 
 
-def select_ai(request):
+'''def select_ai(request):
     if request.method == 'POST':
         form = SelectAI(request.POST)
 
@@ -198,7 +148,7 @@ def select_ai(request):
     else:
         form = SelectAI()
 
-    return render(request, 'selectai.html', {'form': form})
+    return render(request, 'selectai.html', {'form': form})'''
 
             
 def login(request):
