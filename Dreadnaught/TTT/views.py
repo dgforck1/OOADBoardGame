@@ -94,6 +94,11 @@ def game_lobby(request):
             return HttpResponseRedirect('.')
     
     return HttpResponseRedirect('.')
+
+
+
+def checkers_test(request):
+    return render(request, 'checkers_temp.html')
     
 
 

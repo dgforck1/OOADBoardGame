@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="css3.css"/>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 		<script type="text/javascript">
 
 		//Global Variables
@@ -17,7 +18,7 @@
 		var y;
 
 		//Instanciate Arrays
-		window.onload=function(){
+		$(document).ready(function() {
 			
 			painted = new Array();
 			content = new Array();
@@ -27,7 +28,7 @@
 			painted[l] = false;
 			content[l]='';
 			}
-		}
+		});
 
 		//Game methods
 		function canvasClicked(canvasNumber){

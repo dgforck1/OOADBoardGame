@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		
+	<script type="text/javascript">
+		var canvas;
+		var ctx;
+		var d;
+		var alt = true;
+		var board;
+
+		$(document).ready(function()
+		{
+			canvas = document.getElementById("checkerboard");
+			ctx = canvas.getContext("2d");
+
+			d = canvas.width / 8;
+			
+			draw_board();
+		});
+
+		function draw_board()
+		{
+			alt = true;
+
+			for(var x = 0; x < 8; x++) {
+				for (var y = 0; y < 8; y++) {
+					if (alt) {
+						ctx.fillStyle = "rgb(128, 0, 0)";
+					}
+					else {
+						ctx.fillStyle = "rgb(64, 64, 64)";
+					}
+
+					ctx.fillRect(x * d, y * d, d, d);
+					alt = !alt;
+				}
+				alt = !alt;
+			}
+		}
+
+		function draw_pieces()
+		{
+			//TODO
+			//How to draw a circle, used for drawing pieces
+			//cxt.beginPath();
+			//ctx.arc(x, y, d, 0, Math.PI*2, false);
+			//ctx.closePath();
+			//ctx.fill();
+		}
+
+		function canvasClicked()
+		{
+			alert("board was clicked on");
+		}
+	</script>
+	<canvas id="checkerboard" width="600" height="600" style="border:1px solid black" onclick="canvasClicked()"></canvas>
+{% endblock %}
