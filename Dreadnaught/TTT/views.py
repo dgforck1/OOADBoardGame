@@ -301,7 +301,7 @@ def signup(request):
     return HttpResponseRedirect('.')
 
 
-def view_script_list(request):
+def user_script_list(request):
     
     if 'user_id' in request.session:
         if request.session['user_id'] > 0:

@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^login$', views.login, name='login'),
     url(r'^logout$', views.logout, name='logout'),
     url(r'^signup$', views.signup, name='signup'),
-    url(r'^view_script_list$', views.view_script_list, \
+    url(r'^view_script_list$', views.user_script_list, \
         name='View Script List'),
     url(r'^view_script_list/(\d+)/$', views.view_script, name='View Script'),
     url(r'^view_script_games/(\d+)/$', views.view_script_games, \
