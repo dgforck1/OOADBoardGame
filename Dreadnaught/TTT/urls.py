@@ -27,5 +27,6 @@ urlpatterns = patterns('',
         name='Game Results'),
     url(r'^profile/$', views.profile, \
         name='Game Results'),
-    
+    url(r'^change_password/$', views.change_pass, \
+        name='Change Password'),
 )

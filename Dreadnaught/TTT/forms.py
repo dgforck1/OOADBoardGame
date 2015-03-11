@@ -29,4 +29,11 @@ class Signup(forms.Form):
                                max_length = 50)
     confirm_pass = forms.CharField(label = "Confirm Password", \
                                    widget=forms.PasswordInput, max_length = 50)
+
+
+class Change_Pass(forms.Form):
+    prev_password = forms.CharField(label="Confirm Previous Password", \
+                               widget=forms.PasswordInput, max_length = 50)
+    new_password = forms.CharField(label="New Password", \
+                              widget=forms.PasswordInput, max_length = 50)
     

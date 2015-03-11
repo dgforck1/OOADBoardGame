@@ -8,12 +8,15 @@ from lobby import show_open_games
 
 
 def get_user(request):
+    #determine whether the user is logged in
+    #if logged in, returns a user object, otherwise returns 0
     if 'user_id' in request.session:
         if request.session['user_id'] > 0:
             u = request.session['user_id']
             u = users.objects.get(id = u)
 
             return u
+    return 0
 
 def save_script(s, n, request):
     
@@ -395,4 +398,59 @@ def profile(request):
     else:
         return HttpResponseRedirect('/TTT/')
 
+
+
+def change_pass(request):
+
+    u = get_user(request)
+
+    if u:
+        d = {'user': u}
+        
+        if request.method=='POST': #form was submitted
+            form = Change_Pass(request.POST) #put data back into form
+            
+            if form.is_valid():
+                prev_pass = request.POST['prev_password']
+                new_pass = request.POST['new_password']
+
+                current_password = u.password
+
+                if prev_pass == current_password:
+                    u.password = new_pass
+                    message = 'password successfully changed'
+                    form = Change_Pass()
+                    
+                    d['form'] = form
+                    d['message'] = message
+
+
+                    return render(request, 'change_pass.html', d)
+                else:
+                    message = 'incorrect password'
+                    form = Change_Pass()
+                    
+                    d['form'] = form
+                    d['message'] = message
+
+
+                    return render(request, 'change_pass.html', d)
+                    
+            else:
+                message = 'Invalid input'
+                form = Change_Pass()
+                
+                d['form'] = form
+                d['message'] = message
+                
+                return render(request, 'change_pass.html', d)
+            
+        else: #initial loading of page
+        
+            form = Change_Pass()
+            
+            d['form'] = form            
+            return render(request, 'change_pass.html', d)
     
+    else:
+        return HttpResponseRedirect('/TTT/')
