@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block nav %}{{ block.super }}{% endblock %}
+{% block content %}
+      <message>{{ message }}</message>
+      <form action="/TTT/change_password/" method="POST">
+      {% csrf_token %}
+      <formtable>
+	<table>
+	  {{ form.as_table }}
+	</table>
+      </formtable>
+      <input type = "submit" value = "Submit" />
+      </form>
+    
+{% endblock %}
