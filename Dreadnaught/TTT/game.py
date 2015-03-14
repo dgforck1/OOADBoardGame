@@ -244,22 +244,65 @@ def play(game):
     ai2 = game.ai2script.location
     ai1 = ai1.split('/')
     ai2 = ai2.split('/')    
-    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py')))           
-    exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py')))
+    exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py'))) in globals(), locals()         
+    exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py'))) in globals(), locals()
+    time_left = game.time
 
 
     while True:
-        if state == 1:
-            piece = 'x'
-            result = -1
-            hist.append(get_move1(board, 0, piece))
-        elif state == 2:
-            piece = 'o'
-            hist.append(get_move2(board, 0, piece))
+        if state is 1 or state is 2:
+            d = {'num_threads' : 0, 'thread_started' : False, 'result' : None}
+            lock = allocate_lock()
 
-        board[hist[-1]] = piece
-        state = state_check(board, state)
-        temp = ''
+
+
+            def get_move(board, time, state_flag):
+                lock.acquire()
+                d['num_threads'] += 1
+                d['thread_started'] = True
+                lock.release()
+
+                if state_flag:
+                    d['result'] = get_move1(board, time, 'x')
+                else:
+                    d['result'] = get_move2(board, time, 'o')
+
+                lock.acquire()
+                d['num_threads'] -= 1
+                lock.release()
+
+
+
+            start = time.clock()
+            timer = 0
+            max_time = time_left
+            start_new_thread(get_move, (board, time_left, state is 1))
+
+
+
+            while not d['thread_started']:
+                pass
+            while d['num_threads'] > 0:
+                timer = (time.clock() - start) * 1000
+
+                if timer < max_time:
+                    time.sleep(0.1)
+                    continue
+                else:
+                    if state is 1:
+                        state = 4
+                    elif state is 2:
+                        state = 3
+
+            time_left -= timer
+            hist.append(d['result'])
+
+        if hist[-1] is None:
+            hist.pop()
+        else:
+            board[hist[-1]] = piece
+            state = state_check(board, state)
+            temp = ''
 
         if state != 1 and state != 2:
             break
@@ -269,20 +312,27 @@ def play(game):
 
     game.history = temp
     game.state = state
+    game.time = time_left
     game.save()
 
-    if state == 3:
+    if state is 3:
         game.ai1script.wins +=1
-        game.ai2script.losses +=1
-    elif state == 4:
+    elif state is 4:
         game.ai1script.losses += 1
-        game.ai2script.wins += 1
-    elif state == 5:
+    elif state is 5:
         game.ai1script.draws += 1
-        game.ai2script.draws += 1
 
     game.ai1script.save()
+
+    if state is 3:
+        game.ai2script.losses +=1
+    elif state is 4:
+        game.ai2script.wins += 1
+    elif state is 5:
+        game.ai2script.draws += 1
+
     game.ai2script.save()
+    
     return create_results_html(hist, state)
 
 
