@@ -40,6 +40,7 @@ class game(models.Model):
     state = models.IntegerField(default=0)
         #0: pending, 1: x's turn, 2: o's turn, 3: x won, 4: o won, 5: draw
     history = models.CharField(max_length=9, default='')
+    time = models.DecimalField()
     def __unicode__(self):
         return self.state
 

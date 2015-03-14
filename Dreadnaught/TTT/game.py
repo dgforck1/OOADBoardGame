@@ -1,10 +1,12 @@
-import time
+from multiprocessing import Pool
+from thread import start_new_thread, allocate_lock
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
 from TTT.models import game
 from forms import SelectGame, PlayGame
 from views import game_results
+import time
 
 
 
@@ -249,6 +251,7 @@ def play(game):
     while True:
         if state == 1:
             piece = 'x'
+            result = -1
             hist.append(get_move1(board, 0, piece))
         elif state == 2:
             piece = 'o'
@@ -319,7 +322,16 @@ def play_turn(game):
         ai = ai.location.split('/')
         exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
         piece = 'x'
-        hist.append(get_move1(board, 0, piece))
+
+        pool = Pool(processes=1)
+        result = pool.apply_async(get_move1, (board, 0, piece))
+        value = None
+        try:
+            value = result.get(timeout=10)
+        except Queue.Empty:
+            print "ERROR, TERMINATE GAME"
+
+        hist.append(value)
     elif game.state == 2:
         ai = game.ai2script
 
