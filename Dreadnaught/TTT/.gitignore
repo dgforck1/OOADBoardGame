@@ -1,4 +1,6 @@
-/scripts/*
+/scripts/*.py
+/scripts/*.pyc
+!/scripts/__init__.py
 *.pyc
 *.py~
 *.html~
