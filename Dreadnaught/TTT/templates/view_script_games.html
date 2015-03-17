@@ -10,7 +10,9 @@
 	<td>Player 1</td>
 	<td>Player 2</td>
 	<td>AI 1</td>
+	<td>AI 1 Owner</td>
 	<td>AI 2</td>
+	<td>AI 2 Owner</td>
 	<td>State</td>
 	<td>History</td>
       </tr>
@@ -21,7 +23,9 @@
 	<td>{{ game.player1.name }}</td>
 	<td>{{ game.player2.name }}</td>
 	<td>{{ game.ai1script.name }}</td>
+	<td>{{ game.ai1script.user_id.user_name }}</td>
 	<td>{{ game.ai2script.name }}</td>
+	<td>{{ game.ai2script.user_id.user_name }}</td>
 	<td>{% if game.state == 0 %}
 	  Pending
 	  {% elif game.state == 1 %}
