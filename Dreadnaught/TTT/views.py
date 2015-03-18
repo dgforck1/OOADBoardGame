@@ -52,7 +52,8 @@ def save_script(s, n, request):
             for i, line in enumerate(v):
                 if i == 0:
                     if line != 'getmove()':
-                        valid = 0
+                        #valid = 0
+                        valid = 1 #replace when actually implementing validation
                 
             if valid == 1:
                 return ['Script uploaded successfully!', 1]
