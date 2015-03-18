@@ -35,7 +35,7 @@ def save_script(s, n, request):
 
     
         try:
-            path = SCRIPTS_FOLDER + '%s%s.py' % (currentuser.user_name, sc.id)
+            path = SCRIPTS_FOLDER + '%s.py' % (sc.id)
             sc.location = path
             sc.save()
 
