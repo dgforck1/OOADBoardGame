@@ -29,6 +29,7 @@ def save_script(s, n, request):
     if already_exists:
         return ['Script must have a unique name', 0]
     else:
+
         
         sc = scripts(user_id = currentuser, name = n)
         sc.save()
@@ -42,8 +43,26 @@ def save_script(s, n, request):
             with open(path, 'wb+') as destination:
                 for chunk in s.chunks():
                     destination.write(chunk)
+
+            #validate script
+            v = open(path, 'r')
+
+            valid = 1
+            
+            for i, line in enumerate(v):
+                if i == 0:
+                    if line != 'getmove()':
+                        valid = 0
                 
-                    return ['Script uploaded successfully!', 1]
+            if valid == 1:
+                return ['Script uploaded successfully!', 1]
+            else:
+                import os
+                v.close()
+                os.remove(path)
+                sc.delete()
+                
+                return ['Script failed validation!', 0]
         except:
             return ['Script failed to save, please try again', 0]
 
