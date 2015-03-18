@@ -193,12 +193,16 @@ def login(request):
             
             if form.is_valid():
                 try:
+                    from django.contrib.auth.hashers import check_password
                     username = request.POST['username']
                     password = request.POST['password']
                     u = users.objects.get(user_name = request.POST['username'])
                     p = u.password
                     
-                    if password == p:
+
+                    
+                    
+                    if check_password(password, p):
                         request.session.flush()
                         request.session['user_id'] = u.id
                         request.session['user_name'] = u.user_name
@@ -255,7 +259,10 @@ def signup(request):
                                       {'form': form, 'message': message})
                     
                     except:
-                        u = users(user_name = username, password = password, \
+                        from django.contrib.auth.hashers import make_password
+                        hashpass = make_password(form.cleaned_data['password'], None, 'pbkdf2_sha256')
+                        
+                        u = users(user_name = username, password = hashpass, \
                                   email = email)
                         u.save()
                         request.session.flush()
