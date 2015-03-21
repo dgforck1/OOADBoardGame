@@ -30,8 +30,8 @@ force_pull:
 
 #removes all the ~ files, which are just backups
 cleanup:
-	find ./ -name '*~' | xargs rm
 	find ./ -name '*.pyc' | xargs rm
+	find ./ -name '*~' | xargs rm
 
 #clear all of the records in the database
 reset_db:

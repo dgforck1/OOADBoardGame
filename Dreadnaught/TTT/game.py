@@ -17,6 +17,7 @@ class Game:
         self.history = ""
         self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai1.py"
         self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
+        self.time = 900000.0
 
 
 def select_game(request):
@@ -28,7 +29,6 @@ def select_game(request):
             ai2 = form.cleaned_data['player2']
 
             g = game(ai1script = ai1, ai2script  = ai2, state = 1)
-            g = game(ai1script = ai1, ai2script  = ai2)
             g.save()
 
             if ai1 is "None" and ai2 is "None":
@@ -256,16 +256,16 @@ def play(game):
 
 
 
-            def get_move(board, time, state_flag):
+            def get_move(board, current_time, state_flag):
                 lock.acquire()
                 d['num_threads'] += 1
                 d['thread_started'] = True
                 lock.release()
 
                 if state_flag:
-                    d['result'] = get_move1(board, time, 'x')
+                    d['result'] = get_move1(board, current_time, 'x')
                 else:
-                    d['result'] = get_move2(board, time, 'o')
+                    d['result'] = get_move2(board, current_time, 'o')
 
                 lock.acquire()
                 d['num_threads'] -= 1
@@ -313,6 +313,7 @@ def play(game):
     game.history = temp
     game.state = state
     game.time = time_left
+    print (game)
     game.save()
 
     if state is 3:

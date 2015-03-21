@@ -5,12 +5,19 @@ class Game:
         self.history = ""
         self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai1.py"
         self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
+        self.time = 900000.0
 
 class Piece:
 	def __init__(self):
 		x = 0
 		y = 0
 		is_king = False
+
+
+
+killable_pieces = {}
+
+
 
 def create_board(size):
 	board = []
@@ -71,11 +78,11 @@ def get_possible_moves(board, pieces, turn):
 				result = check_move(board, x, y, 1, 1, turn)
 
 				if not result is None:
-					possibles.append([x, y, result[0], result[1]])
+					possibles.append([x, y] + result)
 
 				result = check_move(board, x, y, -1, 1, turn)
 
 				if not result is None:
-					possibles.append([x, y, result[0], result[1]])
+					possibles.append([x, y] + result)
 
 	return possibles
