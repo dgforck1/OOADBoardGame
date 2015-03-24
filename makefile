@@ -36,3 +36,11 @@ cleanup:
 #clear all of the records in the database
 reset_db:
 	mysql --user=root --password=root < Dreadnaught/TTT/sql/reset_db.sql
+
+access_db:
+	mysql --user=root --password=root
+
+recreate_db:
+	mysql --user=root --password=root
+	drop database Dreadnaught
+	create database Dreadnaught

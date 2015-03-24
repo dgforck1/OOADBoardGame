@@ -61,7 +61,6 @@ def play_game(request):
             move = form.cleaned_data['move']
 
         gid = request.POST['gameid']
-        print "Game ID:", gid
 
         g = game.objects.get(id = gid)
         g.history += '%d' % (move)
@@ -277,7 +276,7 @@ def play(game):
             start = time.clock()
             timer = 0
             max_time = time_left
-            start_new_thread(get_move, (board, time_left, state is 1))
+            ai_thread = start_new_thread(get_move, (board, time_left, state is 1))
 
 
 
@@ -290,6 +289,9 @@ def play(game):
                     time.sleep(0.1)
                     continue
                 else:
+                    ai_thread.kill()
+                    d['num_threads'] -= 1
+
                     if state is 1:
                         state = 4
                     elif state is 2:
@@ -314,7 +316,6 @@ def play(game):
     game.history = temp
     game.state = state
     game.time_left = time_left
-    print (game)
     game.save()
 
     if state is 3:
