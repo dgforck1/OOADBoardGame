@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Value
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
@@ -246,21 +246,20 @@ def play(game):
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py'))) in globals(), locals()
     move_d = {'1' : get_move1, '2' : get_move2}
     time_left = game.time_left
-    #time_left = 100
 
 
     while True:
         if state is 1 or state is 2:
             def get_move(board, current_time, state_flag, result, timer):
-                timer = time.time()
+                t = time.time()
 
                 if state_flag:
                     result.value = move_d['1'](board, current_time, 'x')
                 else:
                     result.value = move_d['2'](board, current_time, 'o')
 
-                timer = (time.time() - timer) * 1000
-                timer.value = timer
+                t = (time.time() - t) * 1000
+                timer.value = t
 
 
 
@@ -271,19 +270,24 @@ def play(game):
 
             ai_process = Process(target = get_move, args = (board, time_left, state is 1, result, timer))
             ai_process.start()
-            ai_process.join(time_left / 1000)
+            ai_process.join(time_left)
 
             if ai_process.is_alive():
-                    ai_process.terminate()
-                    
-                    if state is 1:
-                        state = 4
-                    elif state is 2:
-                        state = 3
+                ai_process.terminate()
 
-            print("Time for last turn: {}ms".format(timer.value))
-            time_left -= timer.value
-            hist.append(result.value)
+                print("AI Terminated")
+
+                if state is 1:
+                    state = 4
+                elif state is 2:
+                    state = 3
+                break
+            else:
+                time_left -= timer.value
+                hist.append(result.value)
+
+        if state == 3 or state == 4:
+            break
 
         if hist[-1] is None:
             hist.pop()
@@ -294,6 +298,8 @@ def play(game):
 
         if state != 1 and state != 2:
             break
+
+    temp = ''
 
     for move in hist:
         temp += '{0}'.format(move)

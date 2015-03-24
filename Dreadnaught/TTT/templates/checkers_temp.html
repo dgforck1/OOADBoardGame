@@ -8,6 +8,8 @@
 		var ctx;
 		var d;
 		var board;
+		var possibles;
+		var turn;
 		var selected_pos;
 
 		$(document).ready(function()
@@ -17,6 +19,7 @@
 			ctx = canvas.getContext("2d");
 
 			d = canvas.width / 8;
+			turn = true;
 
 			board = new Array();
 			selected_pos = [-1, -1];
@@ -134,8 +137,26 @@
 	        x -= canvas.offsetLeft;
 	        y -= canvas.offsetTop;
 
-        	selected_pos[0] = Math.floor(y / d);
-        	selected_pos[1] = Math.floor(x / d);
+	        var temp_y = Math.floor(y / d);
+	        var temp_x = Math.floor(x / d);
+
+	        if (turn)
+	        {
+	        	if (board[temp_y][temp_x] == 'r' || board[temp_y][temp_x] == 'R')
+	        	{
+		        	selected_pos[0] = temp_y;
+		        	selected_pos[1] = temp_x;
+	        	}
+
+	        }
+	        else
+	        {
+	        	if (board[temp_y][temp_x] == 'b' || board[temp_y][temp_x] == 'B')
+	        	{
+		        	selected_pos[0] = temp_y;
+		        	selected_pos[1] = temp_x;
+	        	}
+	        }
 
         	draw_board();
 	    }
