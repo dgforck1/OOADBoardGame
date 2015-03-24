@@ -40,7 +40,8 @@ reset_db:
 access_db:
 	mysql --user=root --password=root
 
-recreate_db:
-	mysql --user=root --password=root
-	drop database Dreadnaught
-	create database Dreadnaught
+#recreate_db:
+#	mysql --user=root --password=root
+#	drop database Dreadnaught;
+#	create database Dreadnaught;
+#	exit

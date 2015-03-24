@@ -1,5 +1,4 @@
-from multiprocessing import Pool
-from thread import start_new_thread, allocate_lock
+from multiprocessing import Process
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
@@ -247,58 +246,44 @@ def play(game):
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py'))) in globals(), locals()
     move_d = {'1' : get_move1, '2' : get_move2}
     time_left = game.time_left
+    #time_left = 100
 
 
     while True:
         if state is 1 or state is 2:
-            d = {'num_threads' : 0, 'thread_started' : False, 'result' : None}
-            lock = allocate_lock()
-
-
-
-            def get_move(board, current_time, state_flag):
-                lock.acquire()
-                d['num_threads'] += 1
-                d['thread_started'] = True
-                lock.release()
+            def get_move(board, current_time, state_flag, result, timer):
+                timer = time.time()
 
                 if state_flag:
-                    d['result'] = move_d['1'](board, current_time, 'x')
+                    result.value = move_d['1'](board, current_time, 'x')
                 else:
-                    d['result'] = move_d['2'](board, current_time, 'o')
+                    result.value = move_d['2'](board, current_time, 'o')
 
-                lock.acquire()
-                d['num_threads'] -= 1
-                lock.release()
-
-
-
-            start = time.clock()
-            timer = 0
-            max_time = time_left
-            ai_thread = start_new_thread(get_move, (board, time_left, state is 1))
+                timer = (time.time() - timer) * 1000
+                timer.value = timer
 
 
 
-            while not d['thread_started']:
-                pass
-            while d['num_threads'] > 0:
-                timer = (time.clock() - start) * 1000
+            start = time.time()
 
-                if timer < max_time:
-                    time.sleep(0.1)
-                    continue
-                else:
-                    ai_thread.kill()
-                    d['num_threads'] -= 1
+            result = Value('i', 0)
+            timer = Value('d', 0.0)
 
+            ai_process = Process(target = get_move, args = (board, time_left, state is 1, result, timer))
+            ai_process.start()
+            ai_process.join(time_left / 1000)
+
+            if ai_process.is_alive():
+                    ai_process.terminate()
+                    
                     if state is 1:
                         state = 4
                     elif state is 2:
                         state = 3
 
-            time_left -= timer
-            hist.append(d['result'])
+            print("Time for last turn: {}ms".format(timer.value))
+            time_left -= timer.value
+            hist.append(result.value)
 
         if hist[-1] is None:
             hist.pop()
@@ -375,14 +360,6 @@ def play_turn(game):
         ai = ai.location.split('/')
         exec('from scripts.{0} import get_move as get_move1'.format(ai[-1].rstrip('.py')))
         piece = 'x'
-
-        pool = Pool(processes=1)
-        result = pool.apply_async(get_move1, (board, 0, piece))
-        value = None
-        try:
-            value = result.get(timeout=10)
-        except Queue.Empty:
-            print "ERROR, TERMINATE GAME"
 
         hist.append(value)
     elif game.state == 2:
