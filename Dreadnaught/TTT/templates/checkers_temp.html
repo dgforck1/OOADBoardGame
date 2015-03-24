@@ -7,22 +7,96 @@
 		var canvas;
 		var ctx;
 		var d;
-		var alt = true;
 		var board;
+		var selected_pos;
 
 		$(document).ready(function()
 		{
 			canvas = document.getElementById("checkerboard");
+			canvas.addEventListener("mousedown", getPosition, false);
 			ctx = canvas.getContext("2d");
 
 			d = canvas.width / 8;
+
+			board = new Array();
+			selected_pos = [-1, -1];
+
+			for (var y = 0; y < 8; y++) {
+				board.push(new Array());
+
+				for (var x = 0; x < 8; x++) {
+					board[y].push(' ');
+				}
+			}
+
+			for (var i = 0; i < 3; i++) {
+				for (var x = 0; x < 4; x++) {
+					var spacer = 0;
+
+					if (i % 2 == 0) {
+						spacer += 1;
+					}
+
+					board[i][x * 2 + spacer] = 'b';
+
+					spacer += 1;
+					spacer %= 2;
+
+					board[7 - i][x * 2 + spacer] = 'r';
+				}
+			}
 			
 			draw_board();
 		});
 
+		function draw_pieces()
+		{
+			for (var y = 0; y < 8; y++) {
+				for (var x = 0; x < 8; x++) {
+					if (board[y][x] !== ' ') {
+						var temp_x = (d * x) + (d / 2);
+						var temp_y = (d * y) + (d / 2);
+
+						switch(board[y][x]) {
+						    case 'r':
+								ctx.fillStyle = "rgb(96, 0, 0)";
+      							ctx.strokeStyle = "rgb(48, 0, 0)";
+						        break;
+						    case 'R':
+								ctx.fillStyle = "rgb(96, 0, 0)";
+      							ctx.strokeStyle = "rgb(48, 0, 0)";
+						        break;
+						    case 'b':
+								ctx.fillStyle = "rgb(32, 32, 32)";
+      							ctx.strokeStyle = "rgb(16, 16, 16)";
+						        break;
+						    case 'B':
+								ctx.fillStyle = "rgb(32, 32, 32)";
+      							ctx.strokeStyle = "rgb(16, 16, 16)";
+						        break;
+    						default:
+								ctx.fillStyle = "rgb(128, 128, 128)";
+      							ctx.strokeStyle = "rgb(96, 96, 96)";
+						}
+
+						if (y == selected_pos[0] && x == selected_pos[1]) {
+      							ctx.strokeStyle = "rgb(128, 128, 64)";
+						}
+
+						ctx.beginPath();
+						ctx.arc(temp_x, temp_y, d / 2, 0, 2 * Math.PI, false);
+						ctx.closePath();
+						ctx.fill();
+      					ctx.lineWidth = 5;
+      					ctx.stroke();
+					}
+				}
+			}
+		}
+
 		function draw_board()
 		{
-			alt = true;
+			var alt = true;
 
 			for(var x = 0; x < 8; x++) {
 				for (var y = 0; y < 8; y++) {
@@ -38,22 +112,33 @@
 				}
 				alt = !alt;
 			}
+
+			draw_pieces();
 		}
 
-		function draw_pieces()
-		{
-			//TODO
-			//How to draw a circle, used for drawing pieces
-			//cxt.beginPath();
-			//ctx.arc(x, y, d, 0, Math.PI*2, false);
-			//ctx.closePath();
-			//ctx.fill();
-		}
+	    function getPosition(e) {
+	    	var x = new Number();
+        	var y = new Number();
 
-		function canvasClicked()
-		{
-			alert("board was clicked on");
-		}
+	        if (e.x != undefined && e.y != undefined)
+	        {
+	          	x = e.x;
+	          	y = e.y;
+	        }
+	        else
+	        {
+	          	x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+	         	y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+	        }
+
+	        x -= canvas.offsetLeft;
+	        y -= canvas.offsetTop;
+
+        	selected_pos[0] = Math.floor(y / d);
+        	selected_pos[1] = Math.floor(x / d);
+
+        	draw_board();
+	    }
 	</script>
-	<canvas id="checkerboard" width="600" height="600" style="border:1px solid black" onclick="canvasClicked()"></canvas>
+	<canvas id="checkerboard" width="600" height="600" style="border:1px solid black"></canvas>
 {% endblock %}
