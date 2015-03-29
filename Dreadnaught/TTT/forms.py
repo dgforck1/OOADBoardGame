@@ -11,6 +11,8 @@ class SelectGame(forms.Form):
                                  required=False, empty_label='None')
     player2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
                                  required=False, empty_label='None')
+    timelimit = forms.IntegerField(label = "Time Limit (ms)", min_value = 0, \
+                                 required=False, empty_label=0)
 
 
 class Login(forms.Form):
