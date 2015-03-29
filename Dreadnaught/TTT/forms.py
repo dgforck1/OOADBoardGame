@@ -8,11 +8,11 @@ class UploadFileForm(forms.Form):
 
 class SelectGame(forms.Form):
     player1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
-                                 required=False, empty_label='None')
+                                 required=False)
     player2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
-                                 required=False, empty_label='None')
+                                 required=False)
     timelimit = forms.IntegerField(label = "Time Limit (ms)", min_value = 0, \
-                                 required=False, empty_label=0)
+                                 required=False)
 
 
 class Login(forms.Form):
