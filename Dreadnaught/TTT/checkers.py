@@ -70,8 +70,10 @@ def check_move(board, x, y, dx, dy, turn, l):
     if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
         return
 
+    print x, y, dx, dy
+
     if board[y + dy][x + dx] == u' ':
-        l.append([x + dx, y + dy])
+        l.append([[x, y], [x + dx, y + dy]])
 
 
 
@@ -79,7 +81,9 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
     if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
         if len(path) > 2:
             possibilities += 1
+            print x, y, dx, dy, piece, possibilities, path
             l.append(path)
+            return
         else:
             return
 
@@ -92,8 +96,7 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
         board[my][mx] = u' '
 
         #Add current jump to the path
-        path.append(x + dx)
-        path.append(y + dy)
+        path.append([x + dx, y + dy])
 
         ty = []
         
@@ -108,7 +111,9 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
     else:
         if len(path) > 2:
             possibilities += 1
+            print x, y, dx, dy, piece, possibilities, path
             l.append(path)
+            return
         else:
             return
 
@@ -125,27 +130,29 @@ def get_possible_moves(board, piece):
                 possibilities = 0
                 dy = 0
 
-                if piece == u'b':
+                if pos == u'r':
                     dy = -2
-                elif piece == u'r':
+                elif pos == u'b':
                     dy = 2
 
                 for i in [-2, 2]:
-                    check_jump(deepcopy(board), x, y, i, dy, pos, possibles, [x, y], possibilities)
+                    check_jump(deepcopy(board), x, y, i, dy, pos, possibles, [[x, y]], possibilities)
 
                 if possibilities < 1:
                     for i in [-1, 1]:
+                        print x, y, i, j
                         check_move(deepcopy(board), x, y, i, dy, pos, possibles)
             if pos == king:
                 possibilities = 0
 
                 for i in [-2, 2]:
                     for j in [-2, 2]:
-                        check_jump(deepcopy(board), x, y, i, j, pos, possibles, [x, y], possibilities)
+                        check_jump(deepcopy(board), x, y, i, j, pos, possibles, [[x, y]], possibilities)
 
                 if possibilities < 1:
                     for i in [-1, 1]:
                         for j in [-1, 1]:
+                            print x, y, i, j
                             check_move(deepcopy(board), x, y, i, j, pos, possibles)
 
     return possibles
@@ -166,6 +173,7 @@ def ai_error(state, error):
         return 3
     else:
         return state
+
 
 
 
@@ -253,7 +261,7 @@ def select_game(request):
             time_limit = form.cleaned_data['timelimit']
 
             if time_limit == None:
-            	time_limit = 900000
+                time_limit = 900000
 
             g = game(ai1script = ai1, ai2script  = ai2, state = 1, time_left = time_limit)
             g.save()
