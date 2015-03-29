@@ -88,12 +88,12 @@ def endgame_check(board, pieces, state):
 
 
 
-def create_results_html(history, state):
+def create_results_html(board, state):
 	return "THIS IS A TEST"
 
 
 
-def create_ingame_html(board, state):
+def create_ingame_html(board, possibles, state):
     if state == 1:
         statement = 'Black\'s Turn'
     elif state == 2:
@@ -215,9 +215,9 @@ def play_turn(game):
 
 
 	if state is 1 or state is 2:
-		return create_ingame_html(history, state)
+		return create_ingame_html(board, possibles, state)
 	else:
-		return create_results_html(history, state)
+		return create_results_html(board, state)
 
 
 
