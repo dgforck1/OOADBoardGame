@@ -8,49 +8,53 @@
 		var ctx;
 		var d;
 		var board;
-		var possibles;
-		var turn;
-		var selected_pos;
+		var state;
+		var gid;
 
 		$(document).ready(function()
 		{
 			canvas = document.getElementById("checkerboard");
-			canvas.addEventListener("mousedown", getPosition, false);
+			header = document.getElementById("turn");
 			ctx = canvas.getContext("2d");
 
 			d = canvas.width / 8;
-			turn = true;
+			gid = {{ gid }};
+			state = {{ state }};
+			board = {{ board }};
 
-			board = new Array();
-			selected_pos = [-1, -1];
-
-			for (var y = 0; y < 8; y++) {
-				board.push(new Array());
-
-				for (var x = 0; x < 8; x++) {
-					board[y].push(' ');
-				}
-			}
-
-			for (var i = 0; i < 3; i++) {
-				for (var x = 0; x < 4; x++) {
-					var spacer = 0;
-
-					if (i % 2 == 0) {
-						spacer += 1;
-					}
-
-					board[i][x * 2 + spacer] = 'b';
-
-					spacer += 1;
-					spacer %= 2;
-
-					board[7 - i][x * 2 + spacer] = 'r';
-				}
+			switch(state)
+			{
+			case 1:
+				header.innerHTML = 'Black\'s Turn'
+				break;
+			case 2:
+				header.innerHTML = 'Red\'s Turn'
+				break;
+			case 3:
+				header.innerHTML = 'Black Wins!!!'
+				break;
+			case 4:
+				header.innerHTML = 'Red Wins!!!'
+				break;
+			case 5:
+				header.innerHTML = 'Draw!'
+				break;
+			default:
+				header.innerHTML = 'Something Broke'
+				break;
 			}
 			
 			draw_board();
+
+			setTimeout(post_request, 1000)
 		});
+
+		function post_request()
+		{
+			xmlhttp.open("POST", "play_game", true);
+			//xmlhttp.setRequestHeader("gameid", gid);
+			xmlhttp.send();
+		}
 
 		function draw_pieces()
 		{
@@ -61,29 +65,24 @@
 						var temp_y = (d * y) + (d / 2);
 
 						switch(board[y][x]) {
-						    case 'r':
+						    case 1:
 								ctx.fillStyle = "rgb(96, 0, 0)";
       							ctx.strokeStyle = "rgb(48, 0, 0)";
 						        break;
-						    case 'R':
+						    case 3:
 								ctx.fillStyle = "rgb(96, 0, 0)";
       							ctx.strokeStyle = "rgb(48, 0, 0)";
 						        break;
-						    case 'b':
+						    case 2:
 								ctx.fillStyle = "rgb(32, 32, 32)";
       							ctx.strokeStyle = "rgb(16, 16, 16)";
 						        break;
-						    case 'B':
+						    case 4:
 								ctx.fillStyle = "rgb(32, 32, 32)";
       							ctx.strokeStyle = "rgb(16, 16, 16)";
 						        break;
     						default:
-								ctx.fillStyle = "rgb(128, 128, 128)";
-      							ctx.strokeStyle = "rgb(96, 96, 96)";
-						}
-
-						if (y == selected_pos[0] && x == selected_pos[1]) {
-      							ctx.strokeStyle = "rgb(128, 128, 64)";
+    							continue;
 						}
 
 						ctx.beginPath();
@@ -119,49 +118,8 @@
 			draw_pieces();
 		}
 
-	    function getPosition(e) {
-	    	var x = new Number();
-        	var y = new Number();
-
-	        if (e.x != undefined && e.y != undefined)
-	        {
-	          	x = e.x;
-	          	y = e.y;
-	        }
-	        else
-	        {
-	          	x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-	         	y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-	        }
-
-	        x -= canvas.offsetLeft;
-	        y -= canvas.offsetTop;
-
-	        var temp_y = Math.floor(y / d);
-	        var temp_x = Math.floor(x / d);
-
-	        if (turn)
-	        {
-	        	if (board[temp_y][temp_x] == 'r' || board[temp_y][temp_x] == 'R')
-	        	{
-		        	selected_pos[0] = temp_y;
-		        	selected_pos[1] = temp_x;
-	        	}
-
-	        }
-	        else
-	        {
-	        	if (board[temp_y][temp_x] == 'b' || board[temp_y][temp_x] == 'B')
-	        	{
-		        	selected_pos[0] = temp_y;
-		        	selected_pos[1] = temp_x;
-	        	}
-	        }
-
-        	draw_board();
-	    }
-
-
 	</script>
+	<h2 id="title">Checkers</h2>
+	<h3 id="turn"></h3>
 	<canvas id="checkerboard" width="600" height="600" style="border:1px solid black"></canvas>
 {% endblock %}

@@ -1,11 +1,4 @@
-from multiprocessing import Process, Value
-from django.shortcuts import HttpResponse, render
-from django.http import HttpResponseRedirect
-from settings import SCRIPTS_FOLDER
-from TTT.models import game
-from forms import SelectGame, PlayGame
-from views import game_results
-import time
+
 
 
 
@@ -50,15 +43,12 @@ def select_game(request):
     return render(request, 'select_game.html', {'form': form})
 
 
+@csrf_exempt
 def play_game(request):
     gid = -1
+    state = 0
     
     if request.method == 'POST':
-        form = PlayGame(request.POST)
-
-        if form.is_valid():
-            move = form.cleaned_data['move']
-
         gid = request.POST['gameid']
 
         g = game.objects.get(id = gid)
@@ -72,7 +62,7 @@ def play_game(request):
         gid = -1
         results = 'Nope!'
 
-    return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
+    return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid 'html_string': results})
 
 
 

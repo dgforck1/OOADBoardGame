@@ -1,15 +1,12 @@
 from django.conf.urls import patterns, include, url
 
-from TTT import views
-from TTT import game
+from TTT import views, checkers
 
 urlpatterns = patterns('',
-    url(r'^select_game$', game.select_game, name='select_game'),
-    url(r'^select_game/$', game.select_game, name='select_game'),
-    url(r'^play_game$', game.play_game, name='play_game'),
-    url(r'^play_game/$', game.play_game, name='play_game'),
-    url(r'^checkers_test$', views.checkers_test, name='checkers_test'),
-    url(r'^checkers_test/$', views.checkers_test, name='checkers_test'),
+    url(r'^select_game$', checkers.select_game, name='select_game'),
+    url(r'^select_game/$', checkers.select_game, name='select_game'),
+    url(r'^play_game$', checkers.play_game, name='play_game'),
+    url(r'^play_game/$', checkers.play_game, name='play_game'),
     url(r'^$', views.home, name='home'),
     url(r'^home/$', views.home, name='home'),
     url(r'^uploads$', views.uploads, name='uploads'),

@@ -1,16 +1,11 @@
-import random
+def get_move(state, time_left, piece):
+	import random, json
+	random.seed(None)
 
-
-
-random.seed(None)
-
-
-
-def get_move(board, time_left, piece):
 	possibles = []
+	board = json.load(state)
 
-	for i, pos in enumerate(board):
-		if pos == ' ':
-			possibles.append(i)
+	#Get all possible moves
 
-	return random.choice(possibles)
+	#Randomly choose a possible move
+	return json.dump(random.choice(possibles))

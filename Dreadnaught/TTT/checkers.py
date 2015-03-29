@@ -1,4 +1,12 @@
-import copy
+from multiprocessing import Process, Value
+from django.shortcuts import HttpResponse, render
+from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from settings import SCRIPTS_FOLDER
+from TTT.models import game
+from forms import SelectGame
+from copy import deepcopy
+import time
 
 
 
@@ -6,6 +14,11 @@ killable_pieces = {'r' : ['b','B'],
 				   'R' : ['b','B'],
 				   'b' : ['r','R'],
 				   'B' : ['r','R']}
+
+
+
+start_state = '[[0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0], [0, 2, 0, 2, 0, 2, 0, 2], [2, 0, 2, 0, 2, 0, 2, 0]]'
+
 
 
 
@@ -35,33 +48,56 @@ def create_board(size):
 
 
 
-def check_move(board, x, y, dx, dy, turn):
+def check_move(board, x, y, dx, dy, turn, l):
 	if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
-		return None
+		return
 
-	king = turn.capitalize()
-
-	if board[y + dy][x + dx] is '':
-		return [x + dx, y + dy]
-	elif not (board[y + dy][x + dx] is turn or board[y + dy][x + dx] is king):
-		return check_jump(copy.deepcopy(board), x, y, dx * 2, dy * 2, turn)
-	else:
-		return None
+	if board[y + dy][x + dx] is ' ':
+		l.append([x + dx, y + dy])
 
 
 
-def check_jump(board, x, y, dx, dy, turn):
+def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
 	if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
-		return None
+		if len(path) > 2:
+			possibilities += 1
+			l.append(path)
+		else:
+			return
 
-	if board[y + dy][x + dx] is '':
-		return [x + dx, y + dy]
+	mx = dx / 2
+	my = dy / 2
+
+	#Check to see if jump is valid, otherwise append what you have and return
+	if board[my][mx] is killable_pieces[board[x][y]]:
+		#Remove jumped piece from board
+		board[my][mx] = ' '
+
+		#Add current jump to the path
+		path.append(x + dx)
+		path.append(y + dy)
+
+		ty = []
+		
+		if piece is 'r' or piece is 'R':
+			ty.append(-2)
+		elif piece is 'b' or piece is 'B':
+			ty.append(2)
+
+		for i in [-2, 2]:
+			for j in ty:
+				check_jump(deepcopy(board), x, y, i, j, turn, possibles, [x, y], possibilities)
+
 	else:
-		return None
+		if len(path) > 2:
+			possibilities += 1
+			l.append(path)
+		else:
+			return
 
 
 
-def get_possible_moves(board, pieces, turn):
+def get_possible_moves(board, turn):
 	possibles = []
 
 	king = turn.capitalize()
@@ -69,61 +105,38 @@ def get_possible_moves(board, pieces, turn):
 	for y, row in enumerate(board):
 		for x, pos in enumerate(row):
 			if pos is turn:
-				result = check_move(copy.deepcopy(board), x, y, 1, 1, turn)
+				possibilities = 0
+				dy = 0
 
-				if not result is None:
-					possibles.append([x, y] + result)
+				if turn is 'b':
+					dy = -2
+				elif turn is 'r':
+					dy = 2
 
-				result = check_move(board, x, y, -1, 1, turn)
+				for i in [-2, 2]:
+					check_jump(deepcopy(board), x, y, i, dy, pos, possibles, [x, y], possibilities)
 
-				if not result is None:
-					possibles.append([x, y] + result)
+				if piece < 1:
+					for i in [-1, 1]:
+						check_move(deepcopy(board), x, y, i, dy, pos, possibles)
+			if pos is king:
+				possibilities = 0
+
+				for i in [-2, 2]:
+					for j in [-2, 2]:
+						check_jump(deepcopy(board), x, y, i, j, pos, possibles, [x, y], possibilities)
+
+				if possibilities < 1:
+					for i in [-1, 1]:
+						for j in [-1, 1]:
+							check_move(deepcopy(board), x, y, i, j, pos, possibles)
 
 	return possibles
 
 
 
-def endgame_check(board, pieces, state):
-	return state
-
-
-
-def create_results_html(board, state):
-	return "THIS IS A TEST"
-
-
-
-def create_ingame_html(board, possibles, state):
-    if state == 1:
-        statement = 'Black\'s Turn'
-    elif state == 2:
-        statement = 'Red\'s Turn'
-    elif state == 3:
-        statement = 'Black Wins'
-    elif state == 4:
-        statement = 'Red Wins'
-    elif state == 5:
-        statement = 'Draw'
-        
-    html_str = '\
-    <h1>Welcome!</h1> \
-    <h2>Checkers</h2> \
-    '
-
-    html_str += '<table border=1>'
-
-    for y in range(8):
-        html_str += '<tr> '
-
-        for x in range(8):
-        	html_str += '<th>{0}</th>'.format(board[y][x])
-
-        html_str += ' </tr>'
-
-    html_str += '</table> \
-    <p>%s</p>' % (statement)
-
-    return html_str
+def endgame_check(board, state):
+	return 5
 
 
 
@@ -156,7 +169,7 @@ def play_turn(game):
 	else:
 		return create_results_html(history, state)
 
-	possibles = get_possible_moves(board, [], turn)
+	possibles = get_possible_moves(board, turn)
 
 	exec('from scripts.{0} import get_move as move_d'.format(ai.location.split('/')[-1].rstrip('.py'))) in globals(), locals()
     
@@ -169,7 +182,7 @@ def play_turn(game):
 	            def get_move(board, current_time, state_flag, result, timer):
 	                t = time.time()
 
-	                result.value = move_d(board, current_time, 'b' if state_flag else 'r')
+	                result.value = move_d(json.dump(board), current_time, 'b' if state_flag else 'r')
 
 	                t = (time.time() - t) * 1000
 	                timer.value = t
@@ -213,34 +226,44 @@ def play_turn(game):
 	game.save()
 
 
-
-	if state is 1 or state is 2:
-		return create_ingame_html(board, possibles, state)
-	else:
-		return create_results_html(board, state)
-
-
-
-def play_game(request):
-    gid = -1
-    
+def select_game(request):
     if request.method == 'POST':
-        form = PlayGame(request.POST)
+        form = SelectGame(request.POST)
 
         if form.is_valid():
-            move = form.cleaned_data['move']
+            ai1 = form.cleaned_data['player1']
+            ai2 = form.cleaned_data['player2']
 
-        gid = request.POST['gameid']
+            g = game(ai1script = ai1, ai2script  = ai2, state = 1)
+            g.save()
 
-        g = game.objects.get(id = gid)
-        g.history += '%d' % (move)
-        g.state = ((g.state % 2) + 1)
-        g.save()
-
-        results = play_turn(g)
+            if not ai1 is "None" and not ai2 is "None":
+				gid = -1
+				board = start_state
+				state = 1
+				
+				return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
     else:
-        form = PlayGame()
-        gid = -1
-        results = 'Nope!'
+        form = SelectGame()
 
-    return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
+    return render(request, 'select_game.html', {'form': form})
+
+
+
+@csrf_exempt
+def play_game(request):
+    gid = -1
+    board = start_state
+    state = 1
+    
+    if request.method == 'POST':
+    	state = 2
+        #gid = request.POST['gameid']
+
+        #g = game.objects.get(id = gid)
+        #g.state = ((g.state % 2) + 1)
+        #g.save()
+
+        #play_turn(g)
+
+    return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})

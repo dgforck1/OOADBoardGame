@@ -11,10 +11,6 @@ class SelectGame(forms.Form):
                                  required=False, empty_label='None')
     player2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
                                  required=False, empty_label='None')
-    
-
-class PlayGame(forms.Form):
-    move = forms.IntegerField(label = "Move",  max_value = 8, min_value = 0)
 
 
 class Login(forms.Form):
