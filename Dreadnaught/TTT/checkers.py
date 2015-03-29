@@ -1,23 +1,41 @@
 from multiprocessing import Process, Value
+'''
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from settings import SCRIPTS_FOLDER
 from TTT.models import game
 from forms import SelectGame
+'''
 from copy import deepcopy
+from StringIO import StringIO
+import json
 import time
 
 
 
-killable_pieces = {'r' : ['b','B'],
-                   'R' : ['b','B'],
-                   'b' : ['r','R'],
-                   'B' : ['r','R']}
+killable_pieces = {u'r' : [u'b',u'B'],
+                   u'R' : [u'b',u'B'],
+                   u'b' : [u'r',u'R'],
+                   u'B' : [u'r',u'R']}
 
 
 
 start_state = '[[0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0], [0, 2, 0, 2, 0, 2, 0, 2], [2, 0, 2, 0, 2, 0, 2, 0]]'
+begin_state = StringIO('[[" ", " ", " ", " ", " ", "b", " ", "b"],["b", " ", "b", " ", "b", " ", "b", " "],[" ", "b", " ", "b", " ", "b", " ", "b"],[" ", " ", " ", " ", " ", " ", " ", " "],[" ", " ", " ", " ", " ", " ", " ", " "],["r", " ", "r", " ", "r", " ", "r", " "],[" ", "r", " ", "r", " ", "r", " ", "r"],["r", " ", "r", " ", "r", " ", "r", " "]]')
+
+
+class Game:
+    def __init__(self):
+        self.id = 0
+        self.board = begin_state
+        self.state = 1
+        self.history = ""
+        self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
+        self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
+        self.player1 = None
+        self.player2 = None
+        self.time_left = 60000.0
 
 
 
@@ -34,7 +52,7 @@ def create_board(size):
         for x in range(size / 2):
             spacer = 0
 
-            if i % 2 is 0:
+            if i % 2 == 0:
                 spacer += 1
 
             board[i][x * 2 + spacer] = 'b'
@@ -52,7 +70,7 @@ def check_move(board, x, y, dx, dy, turn, l):
     if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
         return
 
-    if board[y + dy][x + dx] is ' ':
+    if board[y + dy][x + dx] == u' ':
         l.append([x + dx, y + dy])
 
 
@@ -69,9 +87,9 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
     my = dy / 2
 
     #Check to see if jump is valid, otherwise append what you have and return
-    if board[my][mx] is killable_pieces[board[x][y]]:
+    if board[my][mx] in killable_pieces[board[y][x]]:
         #Remove jumped piece from board
-        board[my][mx] = ' '
+        board[my][mx] = u' '
 
         #Add current jump to the path
         path.append(x + dx)
@@ -79,15 +97,14 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
 
         ty = []
         
-        if piece is 'r' or piece is 'R':
+        if piece != u'b':
             ty.append(-2)
-        elif piece is 'b' or piece is 'B':
+        elif piece != u'r':
             ty.append(2)
 
         for i in [-2, 2]:
             for j in ty:
-                check_jump(deepcopy(board), x, y, i, j, turn, possibles, [x, y], possibilities)
-
+                check_jump(deepcopy(board), x, y, i, j, piece, l, deepcopy(path), possibilities)
     else:
         if len(path) > 2:
             possibilities += 1
@@ -97,29 +114,29 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
 
 
 
-def get_possible_moves(board, turn):
+def get_possible_moves(board, piece):
     possibles = []
 
-    king = turn.capitalize()
+    king = piece.capitalize()
     
     for y, row in enumerate(board):
         for x, pos in enumerate(row):
-            if pos is turn:
+            if pos == piece:
                 possibilities = 0
                 dy = 0
 
-                if turn is 'b':
+                if piece == u'b':
                     dy = -2
-                elif turn is 'r':
+                elif piece == u'r':
                     dy = 2
 
                 for i in [-2, 2]:
                     check_jump(deepcopy(board), x, y, i, dy, pos, possibles, [x, y], possibilities)
 
-                if piece < 1:
+                if possibilities < 1:
                     for i in [-1, 1]:
                         check_move(deepcopy(board), x, y, i, dy, pos, possibles)
-            if pos is king:
+            if pos == king:
                 possibilities = 0
 
                 for i in [-2, 2]:
@@ -143,9 +160,9 @@ def endgame_check(board, state):
 def ai_error(state, error):
     print('AI Terminated: ' + error)
 
-    if state is 1:
+    if state == 1:
         return 4
-    elif state is 2:
+    elif state == 2:
         return 3
     else:
         return state
@@ -158,11 +175,11 @@ def play_turn(game):
     time_left = game.time_left
     board = json.load(game.board)
 
-    if state is 1:
+    if state == 1:
         turn = 'b'
         player = game.player1
         ai = game.ai1script
-    elif state is 2:
+    elif state == 2:
         turn = 'r'
         player = game.player2
         ai = game.ai2script
@@ -170,19 +187,20 @@ def play_turn(game):
         return create_results_html(history, state)
 
     possibles = get_possible_moves(board, turn)
+    print possibles
 
-    exec('from scripts.{0} import get_move as move_d'.format(ai.location.split('/')[-1].rstrip('.py'))) in globals(), locals()
     
-    if player is None:
-        if ai is None:
+    if player == None:
+        if ai == None:
             state = 5
             time_left = 0
         else:
-            if state is 1 or state is 2:
-                def get_move(board, current_time, state_flag, result, timer):
+            if state == 1 or state == 2:
+                def get_move(board, ai, current_time, state_flag, result, timer):
                     t = time.time()
 
-                    result.value = move_d(json.dump(board), current_time, 'b' if state_flag else 'r')
+                    exec('from scripts.{0} import get_move as move_f'.format(ai.split('/')[-1].rstrip('.py'))) in globals(), locals()
+                    result.value = move_f(json.dumps(board), current_time, 'b' if state_flag else 'r')
 
                     t = (time.time() - t) * 1000
                     timer.value = t
@@ -194,7 +212,7 @@ def play_turn(game):
                 result = Value('i', 0)
                 timer = Value('d', 0.0)
 
-                ai_process = Process(target = get_move, args = (board, time_left, state is 1, result, timer))
+                ai_process = Process(target = get_move, args = (board, ai, time_left, state == 1, result, timer))
                 ai_process.start()
                 ai_process.join(time_left)
 
@@ -211,7 +229,7 @@ def play_turn(game):
             else:
                 state = ai_error(state, 'Invalid Move')
     else:
-        if ai is None:
+        if ai == None:
             #Human is playing without ai assistance
             pass
         else:
@@ -222,10 +240,10 @@ def play_turn(game):
 
     game.time_left = time_left
     game.state = state
-    game.board = json.dump(board)
-    game.save()
+    game.board = json.dumps(board)
+    #game.save()
 
-
+'''
 def select_game(request):
     if request.method == 'POST':
         form = SelectGame(request.POST)
@@ -237,10 +255,15 @@ def select_game(request):
             g = game(ai1script = ai1, ai2script  = ai2, state = 1)
             g.save()
 
-            if not ai1 is "None" and not ai2 is "None":
+            if not ai1 == "None" and not ai2 == "None":
                 gid = -1
                 board = start_state
                 state = 1
+
+                g = Game()
+                play_turn(g)
+
+                print(g.state)
                 
                 return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
     else:
@@ -267,3 +290,8 @@ def play_game(request):
         #play_turn(g)
 
     return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
+'''
+g = Game()
+play_turn(g)
+
+print(g.state)
