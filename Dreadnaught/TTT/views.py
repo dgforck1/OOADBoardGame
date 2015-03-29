@@ -396,6 +396,12 @@ def game_results(request, id):
     for t in turnsobj:
         turns1.append(t.begin_state)
 
+    import json
+    
+    for a in range(len(turns1)):
+        turns1[a] = json.loads(turns1[a])
+        turns1[a] = json.dumps(turns1[a])
+        print turns1[a]
     
     d['turns'] = turns1
 
