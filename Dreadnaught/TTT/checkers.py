@@ -1,10 +1,13 @@
-from multiprocessing import Process, Value
+from multiprocessing import Process, Manager, Value
+from ctypes import c_char_p
+'''
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from settings import SCRIPTS_FOLDER
 from TTT.models import game
 from forms import SelectGame
+'''
 from copy import deepcopy
 from StringIO import StringIO
 import json
@@ -136,9 +139,10 @@ def get_possible_moves(board, piece):
                 for i in [-2, 2]:
                     check_jump(deepcopy(board), x, y, i, dy, pos, possibles, [[x, y]], possibilities)
 
+                dy /= 2
+
                 if possibilities < 1:
                     for i in [-1, 1]:
-                        print x, y, i, j
                         check_move(deepcopy(board), x, y, i, dy, pos, possibles)
             if pos == king:
                 possibilities = 0
@@ -215,7 +219,7 @@ def play_turn(game):
 
                 start = time.time()
 
-                result = Value('i', 0)
+                result = Manager().Value(c_char_p, '')
                 timer = Value('d', 0.0)
 
                 ai_process = Process(target = get_move, args = (board, ai, time_left, state == 1, result, timer))
@@ -228,7 +232,7 @@ def play_turn(game):
                     state = ai_error(state, 'Timeout')
                 else:
                     time_left -= timer.value
-                    move_val = result.value
+                    move_val = json.load(StringIO(result.value))
 
             if move_val in possibles:
                 state = endgame_check(board, state)
