@@ -50,6 +50,7 @@ class turns(models.Model):
     game = models.ForeignKey(game, related_name='g', blank=False, null=False)
     turn_num = models.IntegerField(default=0)
     begin_state = models.CharField(max_length=100, default='', null=False)
+    accumulated_time = models.FloatField(default=0.0)
 
 
 class moves(models.Model):
