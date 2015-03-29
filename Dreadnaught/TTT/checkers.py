@@ -1,12 +1,10 @@
 from multiprocessing import Process, Value
-'''
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from settings import SCRIPTS_FOLDER
 from TTT.models import game
 from forms import SelectGame
-'''
 from copy import deepcopy
 from StringIO import StringIO
 import json
