@@ -15,8 +15,6 @@ def get_move(state, time_left, piece):
         if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
             return
 
-        print x, y, dx, dy
-
         if board[y + dy][x + dx] == u' ':
             l.append([[x, y], [x + dx, y + dy]])
 
@@ -26,7 +24,6 @@ def get_move(state, time_left, piece):
         if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
             if len(path) > 2:
                 possibilities += 1
-                print x, y, dx, dy, piece, possibilities, path
                 l.append(path)
                 return
             else:
@@ -56,7 +53,6 @@ def get_move(state, time_left, piece):
         else:
             if len(path) > 2:
                 possibilities += 1
-                print x, y, dx, dy, piece, possibilities, path
                 l.append(path)
                 return
             else:
@@ -98,15 +94,10 @@ def get_move(state, time_left, piece):
                     if possibilities < 1:
                         for i in [-1, 1]:
                             for j in [-1, 1]:
-                                print x, y, i, j
                                 check_move(deepcopy(board), x, y, i, j, pos, possibles)
 
         return possibles
 
     possibles = get_possible_moves(board, piece)
 
-    try:
-        return json.dumps(random.choice(possibles))
-    except:
-        print 'Failed Choice'
-        return ''  
+    return json.dumps(random.choice(possibles))

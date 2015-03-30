@@ -1,13 +1,11 @@
 from multiprocessing import Process, Manager, Value
 from ctypes import c_char_p
-'''
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from settings import SCRIPTS_FOLDER
 from TTT.models import game
 from forms import SelectGame
-'''
 from copy import deepcopy
 from StringIO import StringIO
 import json
@@ -23,7 +21,7 @@ killable_pieces = {u'r' : [u'b',u'B'],
 
 
 start_state = '[[0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0], [0, 2, 0, 2, 0, 2, 0, 2], [2, 0, 2, 0, 2, 0, 2, 0]]'
-begin_state = StringIO('[[" ", " ", " ", " ", " ", "b", " ", "b"],["b", " ", "b", " ", "b", " ", "b", " "],[" ", "b", " ", "b", " ", "b", " ", "b"],[" ", " ", " ", " ", " ", " ", " ", " "],[" ", " ", " ", " ", " ", " ", " ", " "],["r", " ", "r", " ", "r", " ", "r", " "],[" ", "r", " ", "r", " ", "r", " ", "r"],["r", " ", "r", " ", "r", " ", "r", " "]]')
+begin_state = StringIO('[[" ", "b", " ", "b", " ", "b", " ", "b"],["b", " ", "b", " ", "b", " ", "b", " "],[" ", "b", " ", "b", " ", "b", " ", "b"],[" ", " ", " ", " ", " ", " ", " ", " "],[" ", " ", " ", " ", " ", " ", " ", " "],["r", " ", "r", " ", "r", " ", "r", " "],[" ", "r", " ", "r", " ", "r", " ", "r"],["r", " ", "r", " ", "r", " ", "r", " "]]')
 
 
 class Game:
@@ -71,18 +69,15 @@ def check_move(board, x, y, dx, dy, turn, l):
     if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
         return
 
-    print x, y, dx, dy
-
     if board[y + dy][x + dx] == u' ':
         l.append([[x, y], [x + dx, y + dy]])
 
 
 
 def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
-    if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
+    if  x + dx >= len(board[0]) or y    + dy >= len(board) or x + dx < 0 or y + dy < 0:
         if len(path) > 2:
             possibilities += 1
-            print x, y, dx, dy, piece, possibilities, path
             l.append(path)
             return
         else:
@@ -112,7 +107,6 @@ def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
     else:
         if len(path) > 2:
             possibilities += 1
-            print x, y, dx, dy, piece, possibilities, path
             l.append(path)
             return
         else:
@@ -154,15 +148,46 @@ def get_possible_moves(board, piece):
                 if possibilities < 1:
                     for i in [-1, 1]:
                         for j in [-1, 1]:
-                            print x, y, i, j
                             check_move(deepcopy(board), x, y, i, j, pos, possibles)
 
     return possibles
 
 
 
+def king_pieces(board):
+    top_row = board[0]
+    bottom_row = board[-1]
+
+    for pos in top_row:
+        if pos == u'r':
+            pos = u'R'
+
+    for pos in bottom_row:
+        if pos == u'b':
+            pos = u'B'
+
+    return board
+
+
+
 def endgame_check(board, state):
-    return 5
+    black_count = 0
+    red_count = 0
+
+    for row in board:
+        for pos in row:
+            if pos == u'r' or pos == u'R':
+                red_count += 1
+            if pos == u'b' or pos == u'B':
+                black_count += 1
+
+    if red_count <= 0:
+        return 3
+
+    if black_count <= 0:
+        return 4
+
+    return state
 
 
 
@@ -179,7 +204,7 @@ def ai_error(state, error):
 
 
 
-def play_turn(game):
+def play_turn(game, turn_count):
     state = game.state
     move_val = None
     time_left = game.time_left
@@ -197,8 +222,6 @@ def play_turn(game):
         return create_results_html(history, state)
 
     possibles = get_possible_moves(board, turn)
-    print possibles
-
     
     if player == None:
         if ai == None:
@@ -235,23 +258,31 @@ def play_turn(game):
                     move_val = json.load(StringIO(result.value))
 
             if move_val in possibles:
+                start = move_val[0]
+                dest = move_val[1]
+
+                temp = board[start[1]][start[0]]
+                board[start[1]][start[0]] = ' '
+                board[dest[1]][dest[0]] = temp
+
+                if start[1] - dest[1] > 1 or start[1] - dest[1] < -1:
+                    mid_x = (start[0] + dest[0]) / 2
+                    mid_y = (start[1] + dest[1]) / 2
+
+                    board[mid_y][mid_x] = ' '
+
+                board = king_pieces(board)
                 state = endgame_check(board, state)
             else:
                 state = ai_error(state, 'Invalid Move')
     else:
-        if ai == None:
-            #Human is playing without ai assistance
-            pass
-        else:
-            #Human is playing with ai assistance
-            pass
-
-
+        return
 
     game.time_left = time_left
     game.state = state
-    game.board = json.dumps(board)
-    #game.save()
+    turn = turns(game=game, turn_num=turn_count, begin_state=json.dumps(board))
+    turn.save()
+    game.save()
 
 def select_game(request):
     if request.method == 'POST':
@@ -274,9 +305,10 @@ def select_game(request):
                 state = 1
 
                 g = Game()
-                play_turn(g)
+                play_turn(g, 1)
 
-                print(g.state)
+                turn = turns(game=g, turn_num=0, begin_state=start_state)
+                turn.save()
                 
                 return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
     else:
@@ -294,18 +326,12 @@ def play_game(request):
     
     if request.method == 'POST':
         state = 2
-        #gid = request.POST['gameid']
+        gid = request.POST['gameid']
 
-        #g = game.objects.get(id = gid)
-        #g.state = ((g.state % 2) + 1)
-        #g.save()
+        g = game.objects.get(id = gid)
+        g.state = ((g.state % 2) + 1)
+        g.save()
 
-        #play_turn(g)
+        play_turn(g, turn_count + 1)
 
     return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
-'''
-g = Game()
-play_turn(g)
-
-print(g.state)
-'''
