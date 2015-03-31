@@ -43,7 +43,7 @@ class game(models.Model):
     time_left = models.FloatField(default=900000.0)
 
     def __unicode__(self):
-        return self.state
+        return str(self.id)
 
 
 

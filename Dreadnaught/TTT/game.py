@@ -17,7 +17,7 @@ class Game:
         self.history = ""
         self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai1.py"
         self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
-        self.time = 900000.0
+        self.time_left = 900000.0
 
 
 def select_game(request):
@@ -246,7 +246,8 @@ def play(game):
     ai2 = ai2.split('/')    
     exec('from scripts.{0} import get_move as get_move1'.format(ai1[-1].rstrip('.py'))) in globals(), locals()         
     exec('from scripts.{0} import get_move as get_move2'.format(ai2[-1].rstrip('.py'))) in globals(), locals()
-    time_left = game.time
+    move_d = {'1' : get_move1, '2' : get_move2}
+    time_left = game.time_left
 
 
     while True:
@@ -263,9 +264,9 @@ def play(game):
                 lock.release()
 
                 if state_flag:
-                    d['result'] = get_move1(board, current_time, 'x')
+                    d['result'] = move_d['1'](board, current_time, 'x')
                 else:
-                    d['result'] = get_move2(board, current_time, 'o')
+                    d['result'] = move_d['2'](board, current_time, 'o')
 
                 lock.acquire()
                 d['num_threads'] -= 1
@@ -300,7 +301,7 @@ def play(game):
         if hist[-1] is None:
             hist.pop()
         else:
-            board[hist[-1]] = piece
+            board[hist[-1]] = 'x' if state is 1 else 'o'
             state = state_check(board, state)
             temp = ''
 
@@ -312,7 +313,7 @@ def play(game):
 
     game.history = temp
     game.state = state
-    game.time = time_left
+    game.time_left = time_left
     print (game)
     game.save()
 
