@@ -46,17 +46,20 @@ class game(models.Model):
         return str(self.id)
 
 
+class turns(models.Model):
+    game = models.ForeignKey(game, related_name='g', blank=False, null=False)
+    turn_num = models.IntegerField(default=0)
+    begin_state = models.CharField(max_length=100, default='', null=False)
 
 
-#the models below this line are depricated
-class pending_games(models.Model):
-    name = models.CharField(max_length=1)
-    def __unicode__(self):
-        return self.name
+class moves(models.Model):
+    turn_num = models.ForeignKey(turns, related_name='turn', blank=False, null=False)
+    move_num = models.IntegerField(default=0)
+    sx = models.IntegerField(default=0)
+    sy = models.IntegerField(default=0)
+    dx = models.IntegerField(default=0)
+    dy = models.IntegerField(default=0)
 
-class game_results(models.Model):
-    game = models.IntegerField()
-    history = models.CharField(max_length=9)
-    def __unicode__(self):
-        return self.history
+
+
     
