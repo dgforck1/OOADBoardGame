@@ -1,22 +1,21 @@
 def get_move(state, time_left, piece):
-    from StringIO import StringIO
     from copy import deepcopy
     import random, json
     random.seed(None)
 
     possibles = []
-    board = json.load(StringIO(state))
+    board = json.loads(state)
     killable_pieces = {u'r' : [u'b',u'B'],
                        u'R' : [u'b',u'B'],
                        u'b' : [u'r',u'R'],
                        u'B' : [u'r',u'R'],
                        u' ' : []}
 
-    king_pieces = { u'r' : [u'R'],
-                    u'R' : [u'R'],
-                    u'b' : [u'B'],
-                    u'B' : [u'B'],
-                    u' ' : []}
+    king_pieces = { u'r' : u'R',
+                    u'R' : u'R',
+                    u'b' : u'B',
+                    u'B' : u'B',
+                    u' ' : u' '}
 
     def check_move(board, x, y, dx, dy, turn, l):
         if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
@@ -72,7 +71,7 @@ def get_move(state, time_left, piece):
     def get_possible_moves(board, piece):
         possibles = []
 
-        king = kinged_pieces[piece]
+        king = king_pieces[piece]
         
         for y, row in enumerate(board):
             for x, pos in enumerate(row):

@@ -6,7 +6,6 @@ from settings import SCRIPTS_FOLDER
 from TTT.models import game, turns
 from forms import SelectGame
 from copy import deepcopy
-from StringIO import StringIO
 import json
 import time
 
@@ -190,7 +189,7 @@ def play_turn(game, turn_count):
     move_val = None
     time_left = game.time_left
     t = turns.objects.get(game = game, turn_num = turn_count)
-    board = json.load(StringIO(t.begin_state))
+    board = json.loads(t.begin_state)
 
     if state == 1:
         turn = u'b'
@@ -239,7 +238,7 @@ def play_turn(game, turn_count):
                     time_left -= timer.value
                     print type(result.value)
                     print result.value
-                    move_val = json.load(StringIO(result.value))
+                    move_val = json.loads(result.value)
 
             if move_val in possibles:
                 for pair in move_val:
