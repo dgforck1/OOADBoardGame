@@ -47,7 +47,7 @@ def check_move(board, x, y, dx, dy, turn, l):
         return
 
     if board[y + dy][x + dx] == u' ':
-        l.append([[[x, y], [x + dx, y + dy]]])
+        l.append([[[y, x], [y + dy, x + dx]]])
 
 
 
@@ -71,7 +71,7 @@ def check_jump(board, x, y, dx, dy, piece, l, path, depth=0):
         board[y][x] = u' '
 
         #Add current jump to the path
-        path.append([[x, y], [x + dx, y + dy]])
+        path.append([[y, x], [y + dy, x + dx]])
 
         ty = []
         
@@ -237,6 +237,8 @@ def play_turn(game, turn_count):
                     state = ai_error(state, 'Timeout')
                 else:
                     time_left -= timer.value
+                    print type(result.value)
+                    print result.value
                     move_val = json.load(StringIO(result.value))
 
             if move_val in possibles:
@@ -244,13 +246,13 @@ def play_turn(game, turn_count):
                     start = pair[0]
                     dest = pair[1]
 
-                    temp = board[start[1]][start[0]]
-                    board[start[1]][start[0]] = u' '
-                    board[dest[1]][dest[0]] = temp
+                    temp = board[start[0]][start[1]]
+                    board[start[0]][start[1]] = u' '
+                    board[dest[0]][dest[1]] = temp
 
                     if start[1] - dest[1] > 1 or start[1] - dest[1] < -1:
-                        mid_x = (start[0] + dest[0]) / 2
-                        mid_y = (start[1] + dest[1]) / 2
+                        mid_x = (start[1] + dest[1]) / 2
+                        mid_y = (start[0] + dest[0]) / 2
 
                         board[mid_y][mid_x] = u' '
 

@@ -23,7 +23,7 @@ def get_move(state, time_left, piece):
             return
 
         if board[y + dy][x + dx] == u' ':
-            l.append([[[x, y], [x + dx, y + dy]]])
+            l.append([[[y, x], [y + dy, x + dx]]])
 
 
 
@@ -47,7 +47,7 @@ def get_move(state, time_left, piece):
             board[y][x] = u' '
 
             #Add current jump to the path
-            path.append([[x, y], [x + dx, y + dy]])
+            path.append([[y, x], [y + dy, x + dx]])
 
             ty = []
             
@@ -72,7 +72,7 @@ def get_move(state, time_left, piece):
     def get_possible_moves(board, piece):
         possibles = []
 
-        king = king_pieces[piece]
+        king = kinged_pieces[piece]
         
         for y, row in enumerate(board):
             for x, pos in enumerate(row):
