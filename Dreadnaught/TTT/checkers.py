@@ -2,9 +2,8 @@ from multiprocessing import Process, Manager, Value
 from ctypes import c_char_p
 from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
 from settings import SCRIPTS_FOLDER
-from TTT.models import game
+from TTT.models import game, turns
 from forms import SelectGame
 from copy import deepcopy
 from StringIO import StringIO
@@ -20,48 +19,7 @@ killable_pieces = {u'r' : [u'b',u'B'],
 
 
 
-start_state = '[[0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0], [0, 2, 0, 2, 0, 2, 0, 2], [2, 0, 2, 0, 2, 0, 2, 0]]'
-begin_state = StringIO('[[" ", "b", " ", "b", " ", "b", " ", "b"],["b", " ", "b", " ", "b", " ", "b", " "],[" ", "b", " ", "b", " ", "b", " ", "b"],[" ", " ", " ", " ", " ", " ", " ", " "],[" ", " ", " ", " ", " ", " ", " ", " "],["r", " ", "r", " ", "r", " ", "r", " "],[" ", "r", " ", "r", " ", "r", " ", "r"],["r", " ", "r", " ", "r", " ", "r", " "]]')
-
-
-class Game:
-    def __init__(self):
-        self.id = 0
-        self.board = begin_state
-        self.state = 1
-        self.history = ""
-        self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
-        self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
-        self.player1 = None
-        self.player2 = None
-        self.time_left = 60000.0
-
-
-
-
-def create_board(size):
-    board = []
-
-    for y in range(size):
-        board.append([])
-        for x in range(size):
-            board[y].append('')
-
-    for i in range((size / 2) - 1):
-        for x in range(size / 2):
-            spacer = 0
-
-            if i % 2 == 0:
-                spacer += 1
-
-            board[i][x * 2 + spacer] = 'b'
-
-            spacer += 1
-            spacer %= 2
-
-            board[(size - 1) - i][x * 2 + spacer] = 'r'
-
-    return board
+begin_state = '[[" ", "b", " ", "b", " ", "b", " ", "b"],["b", " ", "b", " ", "b", " ", "b", " "],[" ", "b", " ", "b", " ", "b", " ", "b"],[" ", " ", " ", " ", " ", " ", " ", " "],[" ", " ", " ", " ", " ", " ", " ", " "],["r", " ", "r", " ", "r", " ", "r", " "],[" ", "r", " ", "r", " ", "r", " ", "r"],["r", " ", "r", " ", "r", " ", "r", " "]]'
 
 
 
@@ -75,7 +33,7 @@ def check_move(board, x, y, dx, dy, turn, l):
 
 
 def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
-    if  x + dx >= len(board[0]) or y    + dy >= len(board) or x + dx < 0 or y + dy < 0:
+    if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
         if len(path) > 2:
             possibilities += 1
             l.append(path)
@@ -208,7 +166,10 @@ def play_turn(game, turn_count):
     state = game.state
     move_val = None
     time_left = game.time_left
-    board = json.load(game.board)
+    t = turns.objects.get(game = game, turn_num = turn_count)
+    board = json.load(StringIO(t.begin_state))
+
+    turn_count += 1
 
     if state == 1:
         turn = 'b'
@@ -232,7 +193,7 @@ def play_turn(game, turn_count):
                 def get_move(board, ai, current_time, state_flag, result, timer):
                     t = time.time()
 
-                    exec('from scripts.{0} import get_move as move_f'.format(ai.split('/')[-1].rstrip('.py'))) in globals(), locals()
+                    exec('from scripts.{0} import get_move as move_f'.format(ai.location.split('/')[-1].rstrip('.py'))) in globals(), locals()
                     result.value = move_f(json.dumps(board), current_time, 'b' if state_flag else 'r')
 
                     t = (time.time() - t) * 1000
@@ -300,17 +261,38 @@ def select_game(request):
             g.save()
 
             if not ai1 == "None" and not ai2 == "None":
-                gid = -1
-                board = start_state
-                state = 1
+                board = begin_state
+                t = 0
 
-                g = Game()
-                play_turn(g, 1)
-
-                turn = turns(game=g, turn_num=0, begin_state=start_state)
+                turn = turns(game=g, turn_num=t, begin_state=begin_state)
                 turn.save()
+
+                play_turn(g, t)
+
+                while g.state == 1 or g.state == 2:
+                    g.state = ((g.state % 2) + 1)
+                    play_turn(g, t)
+
+                turnsobj = turns.objects.filter(game_id = g.id)
+                d = {'game' : g}
+
+                turns1 = []
+
+
+                for t in turnsobj:
+                    turns1.append(t.begin_state)
+
+                import json
                 
-                return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
+                for a in range(len(turns1)):
+                    turns1[a] = json.loads(turns1[a])
+                    turns1[a] = json.dumps(turns1[a])
+                    print turns1[a]
+                
+                d['turns'] = turns1
+
+                return render(request, 'game_results.html', d)
+                #return render(request, 'select_game.html', {'form': form})
     else:
         form = SelectGame()
 
@@ -318,20 +300,5 @@ def select_game(request):
 
 
 
-@csrf_exempt
 def play_game(request):
-    gid = -1
-    board = start_state
-    state = 1
-    
-    if request.method == 'POST':
-        state = 2
-        gid = request.POST['gameid']
-
-        g = game.objects.get(id = gid)
-        g.state = ((g.state % 2) + 1)
-        g.save()
-
-        play_turn(g, turn_count + 1)
-
-    return render(request, 'checkers_temp.html', {'gid': gid, 'state' : state, 'board' : board})
+    return "BROKEN"

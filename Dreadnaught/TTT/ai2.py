@@ -21,7 +21,7 @@ def get_move(state, time_left, piece):
 
 
     def check_jump(board, x, y, dx, dy, piece, l, path, possibilities):
-        if  x + dx >= len(board[0]) or y + dy >= len(board) or x + dx < 0 or y + dy < 0:
+        if  x + dx >= len(board[0]) or y    + dy >= len(board) or x + dx < 0 or y + dy < 0:
             if len(path) > 2:
                 possibilities += 1
                 l.append(path)
