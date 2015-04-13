@@ -49,7 +49,7 @@ class game(models.Model):
 class turns(models.Model):
     game = models.ForeignKey(game, related_name='g', blank=False, null=False)
     turn_num = models.IntegerField(default=0)
-    begin_state = models.CharField(max_length=100, default='', null=False)
+    begin_state = models.CharField(max_length=1000, default='', null=False)
 
 
 class moves(models.Model):
