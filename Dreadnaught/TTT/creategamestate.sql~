@@ -1,0 +1,5 @@
+use Dreadnaught;
+
+update TTT_game
+set begin_state = 
+where id = 1;

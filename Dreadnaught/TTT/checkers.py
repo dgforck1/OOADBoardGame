@@ -1,3 +1,7 @@
+import copy
+
+
+
 class Game:
     def __init__(self):
         self.id = 0
@@ -15,17 +19,20 @@ class Piece:
 
 
 
-killable_pieces = {}
+killable_pieces = {'r' : ['b','B'],
+				   'R' : ['b','B'],
+				   'b' : ['r','R'],
+				   'B' : ['r','R']}
 
 
 
 def create_board(size):
 	board = []
 
-	for x in range(size):
+	for y in range(size):
 		board.append([])
-		for y in range(size):
-			board[x].append('')
+		for x in range(size):
+			board[y].append('')
 
 	for i in range((size / 2) - 1):
 		for x in range(size / 2):
@@ -52,7 +59,7 @@ def check_move(board, x, y, dx, dy, turn):
 	if board[y + dy][x + dx] is '':
 		return [x + dx, y + dy]
 	elif not (board[y + dy][x + dx] is turn or board[y + dy][x + dx] is king):
-		return check_jump(board, x, y, dx * 2, dy * 2, turn)
+		return check_jump(copy.deepcopy(board), x, y, dx * 2, dy * 2, turn)
 	else:
 		return None
 
@@ -75,7 +82,7 @@ def get_possible_moves(board, pieces, turn):
 	for y, row in enumerate(board):
 		for x, pos in enumerate(row):
 			if pos is turn:
-				result = check_move(board, x, y, 1, 1, turn)
+				result = check_move(copy.deepcopy(board), x, y, 1, 1, turn)
 
 				if not result is None:
 					possibles.append([x, y] + result)
@@ -86,3 +93,19 @@ def get_possible_moves(board, pieces, turn):
 					possibles.append([x, y] + result)
 
 	return possibles
+
+
+
+def play_turn(player, ai, board, turn, state):
+	possibles = get_possible_moves(board, [], turn)
+
+	if player is None:
+		if ai is None:
+			#Something went wrong, kill the game
+		else:
+			#Only AI, handle appropriately
+	else:
+		if ai is None:
+			#Human is playing without ai assistance
+		else:
+			#Human is playing with ai assistance
