@@ -2,7 +2,7 @@ from django.shortcuts import HttpResponse, render
 from django.http import HttpResponseRedirect
 from settings import SCRIPTS_FOLDER
 
-from TTT.models import users, scripts, game
+from TTT.models import users, scripts, game, turns
 from forms import *
 from lobby import show_open_games
 
@@ -377,44 +377,26 @@ def view_script_games(request, id):
 def game_results(request, id):
 
     try:
-        id = int(id)
+        id = int(id) #get game id        
         
     except:
         return HttpResponseRedirect('.')
 
 
-    #try:
-    import copy
-    games = game.objects.get(pk = id)
-    history = games.history
-    
-    d = {'game' : games}
 
-    historylist = []
-    board = ['&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;', \
-             '&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;','&nbsp;&nbsp;', \
-             '&nbsp;&nbsp;']
-
-    temp = ''
-
-    for i in range(len(history)):        
-        b = int(history[i])
-        
-        if i % 2 == 0:
-            board[b] = 'X'
-        else:
-            board[b] = 'O'
-
-        historylist.append(copy.deepcopy(board))
+    gameobj = game.objects.get(pk = id)
+    turnsobj = turns.objects.get(game_id = id)
+    d = {'game' : gameobj}
 
     
-    d['history'] = historylist
-        
+
+    import json        
+    d['turns'] = json.loads(turnsobj.begin_state)
+
+    
     return render(request, 'game_results.html', d)
-    '''
-    except:
-        return HttpResponseRedirect('../../')
-    '''
+
+
 
 def profile(request):
     u = get_user(request)

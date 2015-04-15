@@ -47,25 +47,15 @@
 	</tr>
       </table>
       
-      {% for a in history %}
       <p>
-      <table border='1'>
+      <table>
+	{% for a in turns %}
 	<tr>
-	  <th>{{ a.0|safe }}</th>
-	  <th>{{ a.1|safe }}</th>
-	  <th>{{ a.2|safe }}</th>
+	  {% for b in a %}
+	  <td>{{ b }}</td>
+	  {% endfor %}
 	</tr>
-	<tr>
-	  <th>{{ a.3|safe }}</th>
-	  <th>{{ a.4|safe }}</th>
-	  <th>{{ a.5|safe }}</th>
-	</tr>
-	<tr>
-	  <th>{{ a.6|safe }}</th>
-	  <th>{{ a.7|safe }}</th>
-	  <th>{{ a.8|safe }}</th>
-	</tr>	  
+	{% endfor %}
       </table>
       </p>
-      {% endfor %}
 {% endblock %}
