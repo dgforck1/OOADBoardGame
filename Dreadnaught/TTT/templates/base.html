@@ -1,124 +1,76 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<title></title>
-<meta charset="utf-8">
-<!--
+{% block doctype %}<!DOCTYPE HTML> {% endblock %}
+{% load staticfiles %}
+{% block head %}
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static "favicon.ico" %}">
 
-     main color: #174464
-         darker: #072F4C
-        lighter: #467190
+    <title>Project WAM</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "bootstrap.min.css" %}" rel="stylesheet">
 
-    secondary 1: #21226D
-         darker: #0E1052
-        lighter: #353783
-
-    secondary 2: #9c7b1c
-         darker: #765903
-        lighter: #bc9b39
-
-     compliment: #9c641c
-         darker: #764403
-        lighter: #bc8339
-
--->	
-<style>
-body {
-      font-family: Verdana,sans-serif;
-      font-size: 0.8em;
-      background-color: #e0c166;
-}
-
-header, footer, section, article, nav {
-      border: 1px solid grey;
-      margin: 2px;
-      margin-bottom: 15px;
-      padding: 2px;
-      background-color: white;
-}
-
-nav {
-      padding-top: 7px;
-      padding-left: 5px;
-      border: 0px;
-      margin-bottom: 30px;
-      background-color: #174464;
-      font-color: white;
-      width: 80%;
-      height: 25px;      
-}
-
-nav a {
-      color: white;
-}
-
-header, footer {
-      color: black;
-      background-color: #467190;
-      margin-top: 15px;
-      margin-bottom: 5px;
-}
-
-footer {
-      width: 150px;
-      text-align: center;
-      margin-top: 50px;
-}
-
-section {
-    background-color: #ddd;
-}
-
-nav ul {
-      margin:0;
-      padding:0;
-}
-
-nav ul li {
-      display: inline; 
-      margin: 5px;
-}
-
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-tablehead {
-    background-color: #aaaaaa;
-}
-
-formtable table, formtable th, formtable td {
-      border-style: none;
-}
-
-formtable table th {
-      text-align: right;
-}
-
-</style>
-</head>
-
-<body>
-      {% block nav %}
-      <nav>
-	<a href="/TTT">Home</a> |
-	<a href="/TTT/uploads">Upload Scripts</a> |
-	<a href="/TTT/view_script_list">View Scripts</a> |
-	<a href="/TTT/select_game">Play a game</a> |
-  <a href="/TTT/checkers_test">Checkers Test</a> |
-	<a href="/TTT/lobby">Game Lobby</a> |
-	<a href = "/TTT/profile">Profile</a>
-      </nav>
-      {% endblock %}
-
-      <main>
-	{% block content %}
-	{% endblock %}
-      </main>
+    <!-- Custom styles for this template -->
+    <link href="{% static "sticky-footer-navbar.css" %}" rel="stylesheet">
 
 
-      <footer>
-	<p>Project Dreadnaught</p>
-      </footer>
+    <script type='text/javascript' src="{% static "hello_world.js" %}"></script>
+  </head> 
+{% endblock %}
+  <body>
+{% block navbar %}
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/game">Dreadnaught</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+              <li><a href="/TTT/uploads">Upload Scripts</a></li>
+              <li><a href="/TTT/view_script_list">View Scripts</a></li>
+              <li><a href="/TTT/select_game">Play a game</a></li>
+              <li><a href="/TTT/checkers_test">Checkers Test</a></li>
+              <li><a href="/TTT/lobby">Game Lobby</a></li>
+              <li><a href = "/TTT/profile">Profile</a></li>
+            <li class="dropdown">
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/game/challenge_user">Challenge User</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Rules for:</li>
+                <li><a href="http://boardgames.about.com/od/paperpencil/a/tic_tac_toe.htm">Tic-Tac-Toe</a></li>
+                <li><a href="http://boardgames.about.com/cs/checkersdraughts/ht/play_checkers.htm">Checkers</a></li>
+              </ul>
+            </li>
+           </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+{% endblock %}
+<!-- Begin page content -->
+    <div class="container">
+      <div class="page-header">
+     {% block content_header %}<h1>Sticky footer with fixed navbar</h1> {% endblock %}
+      </div>
+{% block content %}
+{% endblock %}
+
+ <!-- <footer class="footer"> -->
+      <!-- <div class="container"> -->
+        <!-- <p class="text-muted"> Created by: Andrew Graham and Andrew Woods.</p> -->
+      <!-- </div> -->
+    <!-- </footer> -->
+
+ <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="{% static "bootstrap.min.js" %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static "ie10-viewport-bug-workaround.js" %}"></script>
 </body>
-</html> 
+</html>

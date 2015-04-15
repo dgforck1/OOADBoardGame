@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, include, url
 
 from TTT import views
 from TTT import game
@@ -30,3 +30,4 @@ urlpatterns = patterns('',
     url(r'^change_password/$', views.change_pass, \
         name='Change Password'),
 )
+

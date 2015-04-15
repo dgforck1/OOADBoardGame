@@ -1,34 +1,20 @@
 {% extends "base.html" %}
-{% block nav %}{{ block.super }}{% endblock %}
+{% block navbar %}{{ block.super }}{% endblock %}
+{% block content_header %} 
+    <h2> Upload an Ai </h2>
+{% endblock %}
 {% block content %}
-      <message>{{ message }}</message>
-    <table border="1" style="solid">
-	<tr>
-	  <th>&nbsp;Username&nbsp;</th>
-	  <th>&nbsp;Game ID&nbsp;</th>
-	  <th>&nbsp;Join&nbsp;</th>
-	</tr>
-
-	{% for game in games %}
-	<tr>
-	  <td>{{ game.player1.user_name }}</td>
-	  <td>{{ game.id }}</td>
-	  <td><a href = "">&nbsp;Join&nbsp;</a></td>
-	</tr>
-	{% endfor %}
-	</table>
-	<br>
-
-	<table border="1" style="solid">
-	<tr>
-	  <th>&nbsp;Available AI&nbsp;</th>
-	  <th>Join</th>
-	</tr>
-	{% for ai in AI %}
-	<tr>
-	  <td>{{ ai.name }}</td> 
-	  <td><a href = "">&nbsp;Join&nbsp;</a></td>
-	</tr>
-	{% endfor %}
-	</table>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form enctype="multipart/form-data" method="post" action="/game/upload/">
+   {% csrf_token %}   
+   <table>
+       {{ form.as_table }}
+    </table>
+    <h2>What game is this script for?</h2>
+    <select name="name_of_game">
+    	<option name="tic_tac_toe">Tic Tac Toe</option>
+    	<option name='checkers'>Checkers</option>
+    </select>
+    <input type="submit" value="Upload"/>
+</form>
 {% endblock %}
