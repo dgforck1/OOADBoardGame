@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{% static "favicon.ico" %}">
 
-    <title>Project WAM</title>
+    <title>Dreadnaught</title>
     <!-- Bootstrap core CSS -->
     <link href="{% static "bootstrap.min.css" %}" rel="stylesheet">
 
@@ -26,7 +26,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/game">Dreadnaught</a>
+          <a class="navbar-brand" href="/TTT">Dreadnaught</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -51,10 +51,11 @@
     </nav>
 
 {% endblock %}
+
 <!-- Begin page content -->
     <div class="container">
       <div class="page-header">
-     {% block content_header %}<h1>Sticky footer with fixed navbar</h1> {% endblock %}
+     {% block content_footer %}<h1>Sticky footer with fixed navbar</h1> {% endblock %}
       </div>
 {% block content %}
 {% endblock %}
