@@ -3,7 +3,7 @@
 {% block content %}
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <script type="text/javascript">
+      <script type="text/javascript">
 		var canvas;
 		var ctx;
 		var d;
@@ -31,9 +31,13 @@
 			d = canvas.width / 8;
 			turn = true;
 
-	                var j = turns[turnnum - 1];
-	                var obj = JSON.parse(j);
+	                var j = '"' + turns[turnnum - 1] + '"';
+	                board = jQuery.parseJSON(j);
 
+	                
+	                
+	
+	                /*
 			board = new Array();
 			selected_pos = [-1, -1];
 
@@ -61,7 +65,8 @@
 					board[7 - i][x * 2 + spacer] = 'r';
 				}
 			}
-			
+			*/
+	                
 			draw_board();
 		});
 
@@ -69,7 +74,7 @@
 		{
 			for (var y = 0; y < 8; y++) {
 				for (var x = 0; x < 8; x++) {
-					if (board[y][x] !== ' ') {
+	                            if (board[y][x] !== ' ') {
 						var temp_x = (d * x) + (d / 2);
 						var temp_y = (d * y) + (d / 2);
 
