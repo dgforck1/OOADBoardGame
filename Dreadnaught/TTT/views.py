@@ -385,13 +385,19 @@ def game_results(request, id):
 
 
     gameobj = game.objects.get(pk = id)
-    turnsobj = turns.objects.get(game_id = id)
-    d = {'game' : gameobj}
 
     
+    turnsobj = turns.objects.filter(game_id = id)
+    d = {'game' : gameobj}
 
-    import json        
-    d['turns'] = json.loads(turnsobj.begin_state)
+    turns1 = []
+
+
+    for t in turnsobj:
+        turns1.append(t.begin_state)
+
+    
+    d['turns'] = turns1
 
     
     return render(request, 'game_results.html', d)
