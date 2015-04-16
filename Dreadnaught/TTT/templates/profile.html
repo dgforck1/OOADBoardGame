@@ -2,7 +2,7 @@
 {% block nav %}{{ block.super }}{% endblock %}
 {% block content %}
       <message>{{ message }}</message>
-      <table>
+      <table class="table">
 	<tr><th>User Name</th><td>{{ user.user_name }}</td></tr>
 	<tr><th>E-Mail</th><td>{{ user.email }}</td></tr>
 	<tr><th>Wins</th><td>{{ user.wins }}</td></tr>
@@ -10,9 +10,9 @@
 	<tr><th>Draws</th><td>{{ user.draws }}</td></tr>
       </table>
     <p>
-    <ul>
-	<li><a href = "">View Games</a></li>
-	<li><a href = "/TTT/change_password">Change Password</a></li>
+    <ul class="list-group-item">
+	<a href = "">View Games</a></li> <br>
+	<a href = "/TTT/change_password">Change Password</a></li>
     </ul>
       </p>
 {% endblock %}
