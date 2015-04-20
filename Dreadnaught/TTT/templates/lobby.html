@@ -22,11 +22,13 @@
 	<table class="table">
 	<tr>
 	  <th>&nbsp;Available AI&nbsp;</th>
+	  <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
 	  <th>Join</th>
 	</tr>
 	{% for ai in AI %}
 	<tr>
-	  <td>{{ ai.name }}</td> 
+	  <td>{{ ai.name }}</td>
+	  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> 
 	  <td><a href = "/TTT/select_game/{{ ai.name }}">&nbsp;Join&nbsp;</a></td>
 	</tr>
 	{% endfor %}
