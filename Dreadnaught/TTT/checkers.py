@@ -243,7 +243,6 @@ def play_turn(game):
     game.board = json.dumps(board)
     #game.save()
 
-'''
 def select_game(request):
     if request.method == 'POST':
         form = SelectGame(request.POST)
@@ -251,8 +250,12 @@ def select_game(request):
         if form.is_valid():
             ai1 = form.cleaned_data['player1']
             ai2 = form.cleaned_data['player2']
+            time_limit = form.cleaned_data['timelimit']
 
-            g = game(ai1script = ai1, ai2script  = ai2, state = 1)
+            if time_limit == None:
+            	time_limit = 900000
+
+            g = game(ai1script = ai1, ai2script  = ai2, state = 1, time_left = time_limit)
             g.save()
 
             if not ai1 == "None" and not ai2 == "None":
@@ -295,3 +298,4 @@ g = Game()
 play_turn(g)
 
 print(g.state)
+'''
