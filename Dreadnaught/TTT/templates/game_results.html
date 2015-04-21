@@ -3,184 +3,32 @@
 {% block content %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
       <script type="text/javascript">
-	//globals
-	
-	var canvas;
-	var ctx;
-	var d;
-	var board;
-	var possibles;
-	var turn;
-	var selected_pos;	
-	var turns = new Array(); //holds all of the turns
+
+	var turns = new Array();
 
 	{% for a in turns %}
 	    turns.push({{ a|safe }});
 	{% endfor %}      
     
-	var l = turns.length; //the number of turns
-	var current_turn = l;
-	var temp = turns[l-1]; //stores the board 2d array of the last turn
+      
 
-	$(document).ready(function()
-	{
 
-	    document.getElementById("turnnum").innerHTML = "turn: " + current_turn;
-	    canvas = document.getElementById("checkerboard");	    
-	    
-	    ctx = canvas.getContext("2d");
-
-	    d = canvas.width / 8;
-	    turn = true;
+      document.write(turns[0]);
 	
-	    board = new Array();
-	    selected_pos = [-1, -1];
+	var board = 
 	
-	    for (var y = 0; y < 8; y++) { //initialize board 2d array to spaces
-	        board.push(new Array());
-	
-	        for (var x = 0; x < 8; x++) {
-	            board[y].push(temp[y][x]);
-	        }
-	    }
-	
-	    /*for (var i = 0; i < 3; i++) {
-	        for (var x = 0; x < 4; x++) {
-	            var spacer = 0;
-	
-	            if (i % 2 == 0) {
-	                spacer += 1;
-	            }
-	
-	            board[i][x * 2 + spacer] = 'b';
-	
-	            spacer += 1;
-	            spacer %= 2;
-	
-	            board[7 - i][x * 2 + spacer] = 'r';
-	        }
-	    }*/
-	draw_board();
-	    }
-	    
-	);
-	
-	function draw_pieces()
-	{
-	    for (var y = 0; y < 8; y++) {
-	        for (var x = 0; x < 8; x++) {
-	            if (board[y][x] !== ' ') {
-	                var temp_x = (d * x) + (d / 2);
-	                var temp_y = (d * y) + (d / 2);
-
-	                switch(board[y][x]) {
-			    case 'r':
-				ctx.fillStyle = "rgb(96, 0, 0)";
-      				ctx.strokeStyle = "rgb(48, 0, 0)";
-				break;
-			    case 'R':
-				ctx.fillStyle = "rgb(96, 0, 0)";
-      				ctx.strokeStyle = "rgb(48, 0, 0)";
-				break;
-			    case 'b':
-				ctx.fillStyle = "rgb(32, 32, 32)";
-      				ctx.strokeStyle = "rgb(16, 16, 16)";
-				break;
-			    case 'B':
-				ctx.fillStyle = "rgb(32, 32, 32)";
-      				ctx.strokeStyle = "rgb(16, 16, 16)";
-				break;
-    			    default:
-				ctx.fillStyle = "rgb(128, 128, 128)";
-      				ctx.strokeStyle = "rgb(96, 96, 96)";
-		        }
-
-		    if (y == selected_pos[0] && x == selected_pos[1]) {
-      			ctx.strokeStyle = "rgb(128, 128, 64)";
-		    }
-
-		    ctx.beginPath();
-		    ctx.arc(temp_x, temp_y, d / 2, 0, 2 * Math.PI, false);
-		    ctx.closePath();
-		    ctx.fill();
-      		    ctx.lineWidth = 5;
-      		    ctx.stroke();
-	        }
-	}}}
-	
-		
 
 
-
-	function draw_board()
-	{
-	    var alt = true;
-	
-	    for(var x = 0; x < 8; x++) {
-	        for (var y = 0; y < 8; y++) {
-	            if (alt) {
-	                ctx.fillStyle = "rgb(128, 0, 0)";
-	            }
-	            else {
-	                ctx.fillStyle = "rgb(64, 64, 64)";
-	            }
-
-	            ctx.fillRect(x * d, y * d, d, d);
-	            alt = !alt;
-	        }
-	        alt = !alt;
-	    }
-	
-	    draw_pieces();
-	}
-
-	function previous()
-	{
-	    if(current_turn - 1 > 0) {
-                current_turn--;
-	        document.getElementById("turnnum").innerHTML = "turn: " + current_turn;
-
-	        temp=turns[current_turn - 1];
-
-	        for (var y = 0; y < 8; y++) { //change board to new turn	
-	            for (var x = 0; x < 8; x++) {
-	                board[y][x] = temp[y][x];
-	            }
-	        }
-
-	        draw_board();
-	    }
-	}
-
-	function next()
-	{
-	   if(current_turn + 1 <= l) {
-               current_turn++;
-	       document.getElementById("turnnum").innerHTML = "turn: " + current_turn;
-
-	       temp=turns[current_turn - 1];
-
-	        for (var y = 0; y < 8; y++) { //change board to new turn	
-	            for (var x = 0; x < 8; x++) {
-	                board[y][x] = temp[y][x];
-	            }
-	        }
-
-	        draw_board();
-	   }
-	}
-
-	
 	</script>
 
 
 
 
 
-    
+    <p id = "printjs"></p>
     <message>{{ message }}
     </message>
-      <table class = "table">
+      <table>
 	<tr>
 	  <th>Game ID</th>
 	  <td>{{ game.id }}</td>
@@ -230,17 +78,5 @@
 	  </td>
 	</tr>
       </table>
-    
-    <table class = "table">
-	<tr>
-	  <td> <button type="button" onClick="previous()">&lt;</button> </td>
-	  <td> <p id="turnnum"></p> </td>
-	  <td> <button type="button" onClick="next()">&gt;</button> </td>
-	  </tr>
-    </table>
-    <p>
-      <canvas id="checkerboard" width="600" height="600" 
-	style="border:1px solid black"></canvas>
-    </p>
-    
+
 {% endblock %}
