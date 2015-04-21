@@ -2,7 +2,7 @@
 {% block nav %}{{ block.super }}{% endblock %}
 {% block content %}
 	<message>{{ message }}</message>
-    <table>
+    <table class="table">
 	<tr>
 	  <th>&nbsp;Username&nbsp;</th>
 	  <th>&nbsp;Game ID&nbsp;</th>
@@ -19,14 +19,16 @@
 	</table>
 	<br>
 
-	<table>
+	<table class="table">
 	<tr>
 	  <th>&nbsp;Available AI&nbsp;</th>
+	  <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
 	  <th>Join</th>
 	</tr>
 	{% for ai in AI %}
 	<tr>
-	  <td>{{ ai.name }}</td> 
+	  <td>{{ ai.name }}</td>
+	  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> 
 	  <td><a href = "/TTT/select_game/{{ ai.name }}">&nbsp;Join&nbsp;</a></td>
 	</tr>
 	{% endfor %}
