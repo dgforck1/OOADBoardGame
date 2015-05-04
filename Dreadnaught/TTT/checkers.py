@@ -137,14 +137,11 @@ def get_possible_moves(board, piece):
 
 
 def king_pieces(board):
-    top_row = board[0]
-    bottom_row = board[-1]
-
-    for x, pos in enumerate(top_row):
+    for x, pos in enumerate(board[0]):
         if pos == u'r':
             board[0][x] = u'R'
 
-    for x, pos in enumerate(bottom_row):
+    for x, pos in enumerate(board[-1]):
         if pos == u'b':
             board[-1][x] = u'B'
 
@@ -194,11 +191,11 @@ def play_turn(game, turn_count):
     board = json.load(StringIO(t.begin_state))
 
     if state == 1:
-        turn = 'b'
+        turn = u'b'
         player = game.player1
         ai = game.ai1script
     elif state == 2:
-        turn = 'r'
+        turn = u'r'
         player = game.player2
         ai = game.ai2script
     else:
@@ -246,14 +243,14 @@ def play_turn(game, turn_count):
                     dest = pair[1]
 
                     temp = board[start[1]][start[0]]
-                    board[start[1]][start[0]] = ' '
+                    board[start[1]][start[0]] = u' '
                     board[dest[1]][dest[0]] = temp
 
                     if start[1] - dest[1] > 1 or start[1] - dest[1] < -1:
                         mid_x = (start[0] + dest[0]) / 2
                         mid_y = (start[1] + dest[1]) / 2
 
-                        board[mid_y][mid_x] = ' '
+                        board[mid_y][mid_x] = u' '
 
                         board = king_pieces(board)
                         state = endgame_check(board, state)
@@ -298,6 +295,24 @@ def select_game(request):
                 while g.state == 1 or g.state == 2:
                     g.state = ((g.state % 2) + 1)
                     turn_num = play_turn(g, turn_num)
+
+                if g.state == 3:
+                    g.ai1script.wins +=1
+                elif g.state == 4:
+                    g.ai1script.losses += 1
+                elif g.state == 5:
+                    g.ai1script.draws += 1
+
+                g.ai1script.save()
+
+                if g.state == 3:
+                    g.ai2script.losses +=1
+                elif g.state == 4:
+                    g.ai2script.wins += 1
+                elif g.state == 5:
+                    g.ai2script.draws += 1
+
+                g.ai2script.save()
 
                 turnsobj = turns.objects.filter(game_id = g.id)
                 d = {'game' : g}
