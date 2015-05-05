@@ -5,7 +5,8 @@ from settings import SCRIPTS_FOLDER
 from TTT.models import users, scripts, game, turns
 from forms import *
 from lobby import show_open_games
-
+from game import play
+import time
 
 def get_user(request):
     #determine whether the user is logged in
@@ -153,6 +154,19 @@ def game_setup(request, id):
 
     
     return HttpResponseRedirect('.')
+
+def create_game(request, ai1_id, ai2_id):
+    ai1 = int(ai1_id)
+    ai2 = int(ai2_id)
+    ai1_object = scripts.objects.get(id = ai1)
+    ai2_object = scripts.objects.get(id = ai2)
+
+    g = game(ai1script = ai1_object, ai2script  = ai2_object, state = 1)
+    g.save()
+
+    results = play(g)
+    return game_results(request, g.id)
+
 
 def checkers_test(request):
     return render(request, 'checkers_temp.html')

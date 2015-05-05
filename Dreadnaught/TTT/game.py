@@ -1,6 +1,6 @@
 
 
-
+import time
 
 class Game:
     def __init__(self):
@@ -10,6 +10,8 @@ class Game:
         self.ai1script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai1.py"
         self.ai2script = "/home/nemesis/CISS438/OOADBoardGame/Dreadnaught/TTT/scripts/ai2.py"
         self.time_left = 900000.0
+
+
 
 
 def select_game(request):
@@ -43,7 +45,7 @@ def select_game(request):
     return render(request, 'select_game.html', {'form': form})
 
 
-@csrf_exempt
+#@csrf_exempt
 def play_game(request):
     gid = -1
     state = 0
@@ -62,7 +64,8 @@ def play_game(request):
         gid = -1
         results = 'Nope!'
 
-    return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid 'html_string': results})
+    return render(request, 'human_game.html', \
+        {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
 
 
 
