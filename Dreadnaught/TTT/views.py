@@ -119,6 +119,40 @@ def game_lobby(request):
     return HttpResponseRedirect('.')
 
 
+def game_setup(request, id):
+    
+    id = int(id)
+
+                
+        
+    
+        
+    if 'user_id' in request.session:
+        if request.session['user_id'] > 0:
+
+            
+            opponentai = scripts.objects.filter(id = id)
+            d = {'opp_ai': opponentai}
+            u = request.session['user_id']
+            u = users.objects.get(id = u)
+            
+            
+            user_scripts = scripts.objects.filter(user_id = u.id)
+            d['scripts'] = user_scripts
+
+            return render(request, 'game_setup.html', d)
+            #return render(request, 'view_script_list.html', \
+        #          {'scripts': user_scripts})
+            
+            
+            
+        else:
+            return HttpResponseRedirect('.')
+
+
+
+    
+    return HttpResponseRedirect('.')
 
 def checkers_test(request):
     return render(request, 'checkers_temp.html')

@@ -24,7 +24,6 @@ def select_game(request):
             g.save()
 
             if ai1 is "None" and ai2 is "None":
-                #Human vs Human, FUCK ASYNCH CALLS
                 #That is all
                 return render(request, 'select_game.html', {'form': form})
             elif ai1 is "None" or ai2 is "None":
@@ -33,7 +32,8 @@ def select_game(request):
                 results = play_turn(g)
 
                 #play_game view should actually handle any game involving humans
-                return render(request, 'human_game.html', {'form': PlayGame(request.POST), 'gid': gid, 'html_string': results})
+                return render(request, 'human_game.html', {'form': \
+                       PlayGame(request.POST), 'gid': gid, 'html_string': results})
             else:
                 results = play(g)
                 return game_results(request, g.id)
