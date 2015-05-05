@@ -137,15 +137,17 @@ def get_possible_moves(board, piece):
 
 
 def king_pieces(board):
-    for x, pos in enumerate(board[0]):
+    temp = deepcopy(board)
+
+    for x, pos in enumerate(temp[0]):
         if pos == u'r':
-            board[0][x] = u'R'
+            temp[0][x] = u'R'
 
-    for x, pos in enumerate(board[-1]):
+    for x, pos in enumerate(temp[-1]):
         if pos == u'b':
-            board[-1][x] = u'B'
+            temp[-1][x] = u'B'
 
-    return board
+    return temp
 
 
 
@@ -252,8 +254,8 @@ def play_turn(game, turn_count):
 
                         board[mid_y][mid_x] = u' '
 
-                        board = king_pieces(board)
-                        state = endgame_check(board, state)
+                board = king_pieces(board)
+                state = endgame_check(board, state)
             else:
                 state = ai_error(state, 'Invalid Move')
     else:
