@@ -3,7 +3,18 @@
 {% block content %}
 <form action="select_game" method="POST">
       {% csrf_token %}
-      {{ form }}
+      <formtable>
+	<table>
+	  {{ form.as_table }}
+	</table>
+      </formtable>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;
+      	&nbsp;&nbsp;&nbsp;&nbsp;
+      	&nbsp;&nbsp;&nbsp;&nbsp;
+      	&nbsp;&nbsp;&nbsp;&nbsp;
+      	&nbsp;&nbsp;&nbsp;&nbsp;
+      	&nbsp;&nbsp;&nbsp;
+      Type r for red or b for black</p>
       <input type = "submit" value = "Submit" />
 </form>
 {% endblock %}

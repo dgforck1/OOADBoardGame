@@ -257,7 +257,6 @@ def play(game):
 
 
             start = time.time()
-
             result = Value('i', 0)
             timer = Value('d', 0.0)
 

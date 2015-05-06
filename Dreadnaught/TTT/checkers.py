@@ -280,6 +280,12 @@ def select_game(request):
             ai1 = form.cleaned_data['player1']
             ai2 = form.cleaned_data['player2']
             time_limit = form.cleaned_data['timelimit']
+            game_piece = form.cleaned_data['color']
+
+            if game_piece == 'r':
+                temp_ai = ai2;
+                ai2 = ai1;
+                ai1 = temp_ai;
 
             if time_limit == None:
                 time_limit = 900000

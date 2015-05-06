@@ -7,13 +7,13 @@ class UploadFileForm(forms.Form):
 
 
 class SelectGame(forms.Form):
-    player1 = forms.ModelChoiceField(label = "Player 1", queryset=scripts.objects.all(), \
+    player1 = forms.ModelChoiceField(label = "My AI", queryset=scripts.objects.all(), \
                                  required=False)
-    player2 = forms.ModelChoiceField(label = "Player 2", queryset=scripts.objects.all(), \
+    player2 = forms.ModelChoiceField(label = "Opponent AI", queryset=scripts.objects.all(), \
                                  required=False)
     timelimit = forms.IntegerField(label = "Time Limit (ms)", min_value = 0, \
                                  required=False)
-
+    color = forms.CharField(label="Pick Your Color", max_length = 5)
 
 class Login(forms.Form):
     username = forms.CharField(label="User Name", max_length = 20)
@@ -35,3 +35,8 @@ class Change_Pass(forms.Form):
     new_password = forms.CharField(label="New Password", \
                               widget=forms.PasswordInput, max_length = 50)
     
+class Play_Game(forms.Form):
+    aiscript2 = forms.ModelChoiceField(label = "AI Script", queryset=scripts.objects.all(), \
+                                 required=True)
+    timelimit = forms.IntegerField(label = "Time Limit (ms)", min_value = 0, \
+                                 required=True)

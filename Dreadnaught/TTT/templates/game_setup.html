@@ -1,20 +1,10 @@
 {% extends "base.html" %}
-{% block nav %}{{ block.super }}{% endblock %}
-{% block content %}
-      <message>{{ message }}</message>
-      <p>
-      Opponent AI: {{ opp_ai.name }}
-      </p>
-
-      <table>
-	{% for a in scripts %}
-	<tr>
-	  <a href = "create_game/{{ a.id}}">
-	    {{ a.name }}
-	  </a>
-	</tr>
-	{% endfor %}
-      </table>
-
-      	
+{% block navbar %}{{ block.super }}{% endblock %}
+{% block content %} 
+<message>{{ message }}</message>
+<form action="game_setup" method="POST" >
+      {% csrf_token %}
+      {{ form }}
+      <input type = "submit" value = "Submit" />
+</form>
 {% endblock %}

@@ -122,12 +122,7 @@ def game_lobby(request):
 
 def game_setup(request, id):
     
-    id = int(id)
-
-                
-        
-    
-        
+    id = int(id)    
     if 'user_id' in request.session:
         if request.session['user_id'] > 0:
 
@@ -151,68 +146,81 @@ def game_setup(request, id):
             return HttpResponseRedirect('.')
 
 
-
-    
     return HttpResponseRedirect('.')
 
 def create_game(request, ai1_id, ai2_id):
-    ai1 = int(ai1_id)
-    ai2 = int(ai2_id)
-    ai1_object = scripts.objects.get(id = ai1)
-    ai2_object = scripts.objects.get(id = ai2)
 
-    g = game(ai1script = ai1_object, ai2script  = ai2_object, state = 1, time_left = 900000)
-    g.save()
-    t = turns(game=g, turn_num=0, begin_state=start_state)
-    t.save()
+    if request.method == 'POST':
+        form = Play_Game(request.POST)
 
-    if not ai1 == "None" and not ai2 == "None":
-        turn_num = 0
-
-        turn_num = play_turn(g, turn_num)
-
-        while g.state == 1 or g.state == 2:
-            g.state = ((g.state % 2) + 1)
-            turn_num = play_turn(g, turn_num)
-
-        if g.state == 3:
-            g.ai1script.wins +=1
-        elif g.state == 4:
-            g.ai1script.losses += 1
-        elif g.state == 5:
-            g.ai1script.draws += 1
-
-        g.ai1script.save()
-
-        if g.state == 3:
-            g.ai2script.losses +=1
-        elif g.state == 4:
-            g.ai2script.wins += 1
-        elif g.state == 5:
-            g.ai2script.draws += 1
-
-        g.ai2script.save()
-
-        turnsobj = turns.objects.filter(game_id = g.id)
-        d = {'game' : g}
-
-        turns1 = []
+        if form.is_valid():
+            ai1 = scripts.objects.get(id = 1)
+            ai2 = form.cleaned_data['aiscript2'] 
+            timelimit = form.cleaned_data['timelimit']
 
 
-        for t in turnsobj:
-            turns1.append(t.begin_state)
+    #ai1 = int(ai1_id)
+    #ai2 = int(ai2_id)
+    #ai1_object = scripts.objects.get(id = ai1)
+    #ai2_object = scripts.objects.get(id = ai2)
 
-        import json
+            g = game(ai1script = ai1, ai2script  = ai2, state = 1, time_left = 900000)
+            g.save()
+            t = turns(game=g, turn_num=0, begin_state=start_state)
+            t.save()
+
+            if not ai1 == "None" and not ai2 == "None":
+                turn_num = 0
+
+                turn_num = play_turn(g, turn_num)
+
+                while g.state == 1 or g.state == 2:
+                    g.state = ((g.state % 2) + 1)
+                    turn_num = play_turn(g, turn_num)
+
+                if g.state == 3:
+                    g.ai1script.wins +=1
+                elif g.state == 4:
+                    g.ai1script.losses += 1
+                elif g.state == 5:
+                    g.ai1script.draws += 1
+
+                g.ai1script.save()
+
+                if g.state == 3:
+                    g.ai2script.losses +=1
+                elif g.state == 4:
+                    g.ai2script.wins += 1
+                elif g.state == 5:
+                    g.ai2script.draws += 1
+
+                g.ai2script.save()
+
+                turnsobj = turns.objects.filter(game_id = g.id)
+                d = {'game' : g}
+
+                turns1 = []
+
+
+                for t in turnsobj:
+                    turns1.append(t.begin_state)
+
+                import json
+                
+                for a in range(len(turns1)):
+                    turns1[a] = json.loads(turns1[a])
+                    turns1[a] = json.dumps(turns1[a])
+                
+                d['turns'] = turns1
+
+                return render(request, 'game_results.html', d)
+            else:
+                return "broken"
+
+        else:
+            form = Play_Game()
         
-        for a in range(len(turns1)):
-            turns1[a] = json.loads(turns1[a])
-            turns1[a] = json.dumps(turns1[a])
-        
-        d['turns'] = turns1
-
-        return render(request, 'game_results.html', d)
-    else:
-        return "broken"
+        return render(request, 'game_setup.html', {'form': form})
 
 
 def checkers_test(request):
