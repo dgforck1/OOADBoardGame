@@ -5,7 +5,7 @@ from settings import SCRIPTS_FOLDER
 from TTT.models import users, scripts, game, turns
 from forms import *
 from lobby import show_open_games
-from game import play
+from checkers import play_turn, start_state
 import time
 
 def get_user(request):
@@ -161,11 +161,58 @@ def create_game(request, ai1_id, ai2_id):
     ai1_object = scripts.objects.get(id = ai1)
     ai2_object = scripts.objects.get(id = ai2)
 
-    g = game(ai1script = ai1_object, ai2script  = ai2_object, state = 1)
+    g = game(ai1script = ai1_object, ai2script  = ai2_object, state = 1, time_left = 900000)
     g.save()
+    t = turns(game=g, turn_num=0, begin_state=start_state)
+    t.save()
 
-    results = play(g)
-    return game_results(request, g.id)
+    if not ai1 == "None" and not ai2 == "None":
+        turn_num = 0
+
+        turn_num = play_turn(g, turn_num)
+
+        while g.state == 1 or g.state == 2:
+            g.state = ((g.state % 2) + 1)
+            turn_num = play_turn(g, turn_num)
+
+        if g.state == 3:
+            g.ai1script.wins +=1
+        elif g.state == 4:
+            g.ai1script.losses += 1
+        elif g.state == 5:
+            g.ai1script.draws += 1
+
+        g.ai1script.save()
+
+        if g.state == 3:
+            g.ai2script.losses +=1
+        elif g.state == 4:
+            g.ai2script.wins += 1
+        elif g.state == 5:
+            g.ai2script.draws += 1
+
+        g.ai2script.save()
+
+        turnsobj = turns.objects.filter(game_id = g.id)
+        d = {'game' : g}
+
+        turns1 = []
+
+
+        for t in turnsobj:
+            turns1.append(t.begin_state)
+
+        import json
+        
+        for a in range(len(turns1)):
+            turns1[a] = json.loads(turns1[a])
+            turns1[a] = json.dumps(turns1[a])
+        
+        d['turns'] = turns1
+
+        return render(request, 'game_results.html', d)
+    else:
+        return "broken"
 
 
 def checkers_test(request):
